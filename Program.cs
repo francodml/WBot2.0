@@ -1,15 +1,10 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using DSharpPlus;
+﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Exceptions;
-using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
-using Newtonsoft.Json;
+using System;
+using System.Threading.Tasks;
 
 namespace WBot2
 {
@@ -63,16 +58,4 @@ namespace WBot2
             await Task.Delay(-1);
         }
     }
-    public struct ConfigJson
-    {
-        [JsonProperty("token")]
-        public string Token { get; private set; }
-
-        [JsonProperty("prefix")]
-        public string CommandPrefix { get; private set; }
-
-        [JsonProperty("owner")]
-        public string Owner { get; private set; }
-    }
-
 }
