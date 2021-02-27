@@ -48,9 +48,9 @@ namespace WBot2.Helpers
             }
         }
 
-        public MethodInfo FindCommand(string cmd)
+        private Task<MethodInfo> FindCommand(string cmd)
         {
-            return _commands.FirstOrDefault(x => x.GetCustomAttribute<CommandAttribute>().Name == cmd);
+            return Task.Run(() => _commands.FirstOrDefault(x => x.GetCustomAttribute<CommandAttribute>().Name == cmd));
         }
         public async Task ProcessCommands(DiscordClient sender, MessageCreateEventArgs e)
         {
@@ -68,7 +68,7 @@ namespace WBot2.Helpers
                 return;
             }*/
             args = args.Skip(1).ToList();
-            var command = FindCommand(cmd);
+            var command = await FindCommand(cmd);
             if (command == null)
             {
                 await e.Message.RespondAsync($"Unknown command, type `{_baseOptions.CommandPrefix} help` for all commands");
