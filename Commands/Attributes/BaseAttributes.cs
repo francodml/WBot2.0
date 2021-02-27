@@ -12,6 +12,17 @@ namespace WBot2.Commands.Attributes
         public CommandAttribute(string name) => this.Name = name;
     }
 
+    [System.AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    sealed class AliasAttribute : Attribute
+    {
+        public string[] Aliases { get; private set; }
+        // This is a positional argument
+        public AliasAttribute(params string[] aliases)
+        {
+            this.Aliases = aliases;
+        }
+    }
+
     [AttributeUsage(AttributeTargets.Method)]
     public class PermissionsAttribute : Attribute
     {
