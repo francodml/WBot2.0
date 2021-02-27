@@ -20,14 +20,14 @@ namespace WBot2.Services
         private readonly DiscordClient _client;
         private readonly DiscordOptions _options;
         private readonly IServiceProvider _serviceProvider;
-        private readonly DiscordCommandHandler _commandHandler;
+        private readonly ICommandHandler _commandHandler;
 
         public DiscordService(
             ILogger<DiscordService> logger,
             DiscordClient client,
             IOptions<DiscordOptions> options,
             IServiceProvider serviceProvider,
-            DiscordCommandHandler commandHandler
+            ICommandHandler commandHandler
             )
         {
             _logger = logger;
@@ -59,6 +59,8 @@ namespace WBot2.Services
 
         public async Task MessageCreated(DiscordClient sender, MessageCreateEventArgs e)
         {
+            if (e.Author.IsBot)
+                return;
             await _commandHandler.ProcessCommands(sender, e);
             _logger.LogInformation($"User {e.Author.Username}#{e.Author.Discriminator} issued a possible command.");
         }
