@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "WBot2": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "Discord__CommandPrefix": "w:"
+      }
+    }
+  }
+}
