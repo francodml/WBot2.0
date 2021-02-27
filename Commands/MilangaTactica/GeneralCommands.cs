@@ -14,17 +14,17 @@ namespace WBot2.Commands.MilangaTactica
         public GeneralCommands(IServiceProvider serviceProvider) : base(serviceProvider)
         {
 
-        } 
+        }
 
         [Command("ping")]
         public async Task Ping(MessageCreateEventArgs e)
         {
-            await e.Message.RespondAsync("Pong!");
-        }
-        [Command("pingmention")]
-        public async Task MentionPing(MessageCreateEventArgs e)
-        {
             await e.Message.RespondAsync($"{e.Author.Mention} Pong!");
+        }
+        [Command("say")]
+        public async Task SayCommand(MessageCreateEventArgs e, List<string> args)
+        {
+            await e.Message.RespondAsync($"You told me to say {string.Join(" ", args)}");
         }
     }
 }

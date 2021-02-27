@@ -18,4 +18,12 @@ namespace WBot2.Commands.Attributes
         public DSharpPlus.Permissions Permissions { get; private set; }
         public PermissionsAttribute(DSharpPlus.Permissions perms) => this.Permissions = perms;
     }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    public class DescriptionAttribute : Attribute
+    {
+        public string Description { get; private set; }
+
+        public DescriptionAttribute(string description) => Description = description;
+    }
 }

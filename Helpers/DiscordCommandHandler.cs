@@ -50,6 +50,7 @@ namespace WBot2.Helpers
 
         private Task<MethodInfo> FindCommand(string cmd)
         {
+            //TODO: implement command overloading (optional args), aliases
             return Task.Run(() => _commands.FirstOrDefault(x => x.GetCustomAttribute<CommandAttribute>().Name == cmd));
         }
         public async Task ProcessCommands(DiscordClient sender, MessageCreateEventArgs e)
@@ -62,11 +63,12 @@ namespace WBot2.Helpers
                                            : new string[] { element })  // Keep the entire item
                      .SelectMany(element => element).ToList();
             var cmd = args.FirstOrDefault();
-            /*if (string.IsNullOrEmpty(cmd) || cmd == "help")
+            if (string.IsNullOrEmpty(cmd) || cmd == "help")
             {
-                await e.Message.RespondAsync($"Commands: {string.Join(", ", _commands.Where(x => Assembly.GetAssembly(nameof(x)).GetCustomAttribute(CommandAttribute).Select(x => x.Command))}");
+                //TODO: Move this to a dedicated "help" command, leave this as fallback if one isn't defined. Add command descriptions
+                await e.Message.RespondAsync($"Commands: {string.Join(", ", _commands.Select(x => x.GetCustomAttribute<CommandAttribute>().Name))}");
                 return;
-            }*/
+            }
             args = args.Skip(1).ToList();
             var command = await FindCommand(cmd);
             if (command == null)
@@ -78,7 +80,7 @@ namespace WBot2.Helpers
             _logger.LogInformation($"Command {command} with args {string.Join(" ", args)} run by {e.Author.Username}");
             try
             {
-                await Task.Run( () => command.Invoke(_commandModules.FirstOrDefault(x => x.GetType().FullName == command.DeclaringType.FullName), new object[] { e }));
+                await Task.Run( () => command.Invoke(_commandModules.FirstOrDefault(x => x.GetType().FullName == command.DeclaringType.FullName), new object[] { e, args }));
             }
             catch (Exception ex)
             {
