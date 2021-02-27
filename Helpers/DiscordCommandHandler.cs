@@ -51,7 +51,7 @@ namespace WBot2.Helpers
         private Task<MethodInfo> FindCommand(string cmd)
         {
             //TODO: implement command overloading (optional args), aliases
-            return Task.Run(() => _commands.FirstOrDefault(x => x.GetCustomAttribute<CommandAttribute>().Name == cmd));
+            return Task.Run(() => _commands.FirstOrDefault(x => x.GetCustomAttribute<CommandAttribute>().Name == cmd || x.GetCustomAttribute<AliasAttribute>().Aliases.Any(x => x == cmd)));
         }
         public async Task ProcessCommands(DiscordClient sender, MessageCreateEventArgs e)
         {

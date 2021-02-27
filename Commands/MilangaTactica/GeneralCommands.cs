@@ -17,7 +17,8 @@ namespace WBot2.Commands.MilangaTactica
         }
 
         [Command("ping")]
-        public async Task Ping(MessageCreateEventArgs e)
+        [Alias("pong", "p")]
+        public async Task Ping(MessageCreateEventArgs e, List<string> args)
         {
             await e.Message.RespondAsync($"{e.Author.Mention} Pong!");
         }
