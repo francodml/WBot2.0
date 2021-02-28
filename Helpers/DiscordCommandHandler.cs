@@ -53,7 +53,16 @@ namespace WBot2.Helpers
         private MethodInfo FindCommand(string cmd)
         {
             //TODO: implement command overloading (optional args)
-            return _commands.FirstOrDefault(x => x.GetCustomAttribute<CommandAttribute>().Name == cmd || x.GetCustomAttribute<AliasAttribute>().Aliases.Any(x => x == cmd));
+            return _commands.FirstOrDefault(x =>
+            {
+                AliasAttribute attr = x.GetCustomAttribute<AliasAttribute>();
+                bool aliastest = false;
+                if (attr != null)
+                {
+                    aliastest = attr.Aliases.Any(x => x == cmd);
+                }
+                return x.GetCustomAttribute<CommandAttribute>().Name == cmd || aliastest;
+            });
         }
 
         private async Task RunCommandAsync(string cmd, MessageCreateEventArgs e, List<string> args)
@@ -64,6 +73,16 @@ namespace WBot2.Helpers
                 await e.Message.RespondAsync($"Unknown command, type `{_baseOptions.CommandPrefix} help` for all commands");
                 return;
             }
+
+            if (command.GetCustomAttribute<OwnerOnlyAttribute>() != null && e.Author.Id != _baseOptions.Owner)
+            {
+                await e.Message.RespondAsync("This command can only be run by the bot owner.");
+                return;
+            }
+
+            var aMember = await e.Guild.GetMemberAsync(e.Author.Id);
+            var permscheck = e.Channel.PermissionsFor(aMember).HasPermission(command.GetCustomAttribute<NeedsPermissionsAttribute>().Permissions);
+
             _logger.LogInformation($"Command {command} with args {string.Join(" ", args)} run by {e.Author.Username}");
             await (Task)command.Invoke(_commandModules.FirstOrDefault(x => x.GetType().FullName == command.DeclaringType.FullName), new object[] { e, args });
         }
