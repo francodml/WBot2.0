@@ -62,7 +62,6 @@ namespace WBot2.Services
             if (e.Author.IsBot)
                 return;
             await _commandHandler.ProcessCommands(sender, e);
-            _logger.LogInformation($"User {e.Author.Username}#{e.Author.Discriminator} issued a possible command.");
         }
         public async Task StopAsync(CancellationToken cancellationToken)
         {
