@@ -12,5 +12,8 @@ namespace WBot2.Data
 
         [Required]
         public string CommandPrefix { get; set; }
+
+        [Required]
+        public ulong Owner { get; set; }
     }
 }
