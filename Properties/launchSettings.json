@@ -3,6 +3,7 @@
     "WBot2": {
       "commandName": "Project",
       "environmentVariables": {
+        "Discord__Owner": "166144848867491841",
         "Discord__CommandPrefix": "w:"
       }
     }

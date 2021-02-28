@@ -5,6 +5,9 @@
     <TargetFramework>net5.0</TargetFramework>
     <Platforms>AnyCPU;x64</Platforms>
     <UserSecretsId>a07384b8-9ee8-4eae-92a1-7703b54e223d</UserSecretsId>
+    <Authors>Franco D. M. L.</Authors>
+    <Version>1.0.0</Version>
+    <Company>Milanga Tactica Capitalista</Company>
   </PropertyGroup>
 
   <ItemGroup>
