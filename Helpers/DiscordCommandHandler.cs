@@ -19,16 +19,18 @@ namespace WBot2.Helpers
     public class DiscordCommandHandler : ICommandHandler
     {
         protected readonly IServiceProvider _serviceProvider;
-        public ILogger<DiscordCommandHandler> _logger;
+        protected readonly ILogger<DiscordCommandHandler> _logger;
         protected readonly DiscordOptions _baseOptions;
+        protected readonly DiscordClient _discordClient;
 
         private List<BaseCommandModule> _commandModules;
         private List<MethodInfo> _commands;
-        public DiscordCommandHandler(IServiceProvider serviceProvider, ILogger<DiscordCommandHandler> logger)
+        public DiscordCommandHandler(IServiceProvider serviceProvider, ILogger<DiscordCommandHandler> logger, DiscordClient discordClient)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
             _baseOptions = _serviceProvider.GetRequiredService<IOptions<DiscordOptions>>().Value;
+            _discordClient = discordClient;
 
             _commandModules = new();
             _commands = new();
@@ -48,10 +50,16 @@ namespace WBot2.Helpers
             }
         }
 
-        private Task<MethodInfo> FindCommand(string cmd)
+        private MethodInfo FindCommand(string cmd)
         {
-            //TODO: implement command overloading (optional args), aliases
-            return Task.Run(() => _commands.FirstOrDefault(x => x.GetCustomAttribute<CommandAttribute>().Name == cmd || x.GetCustomAttribute<AliasAttribute>().Aliases.Any(x => x == cmd)));
+            //TODO: implement command overloading (optional args)
+            return _commands.FirstOrDefault(x => x.GetCustomAttribute<CommandAttribute>().Name == cmd || x.GetCustomAttribute<AliasAttribute>().Aliases.Any(x => x == cmd));
+        }
+
+        private async Task RunCommandAsync(string cmd, MessageCreateEventArgs e, List<string> args)
+        {
+            MethodInfo command = FindCommand(cmd);
+            await (Task)command.Invoke(_commandModules.FirstOrDefault(x => x.GetType().FullName == command.DeclaringType.FullName), new object[] { e, args });
         }
         public async Task ProcessCommands(DiscordClient sender, MessageCreateEventArgs e)
         {
@@ -70,7 +78,7 @@ namespace WBot2.Helpers
                 return;
             }
             args = args.Skip(1).ToList();
-            var command = await FindCommand(cmd);
+            var command = FindCommand(cmd);
             if (command == null)
             {
                 await e.Message.RespondAsync($"Unknown command, type `{_baseOptions.CommandPrefix} help` for all commands");
@@ -80,7 +88,8 @@ namespace WBot2.Helpers
             _logger.LogInformation($"Command {command} with args {string.Join(" ", args)} run by {e.Author.Username}");
             try
             {
-                await Task.Run( () => command.Invoke(_commandModules.FirstOrDefault(x => x.GetType().FullName == command.DeclaringType.FullName), new object[] { e, args }));
+                await e.Channel.TriggerTypingAsync();
+                await RunCommandAsync(cmd, e, args);
             }
             catch (Exception ex)
             {
