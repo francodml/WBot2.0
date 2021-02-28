@@ -59,6 +59,12 @@ namespace WBot2.Helpers
         private async Task RunCommandAsync(string cmd, MessageCreateEventArgs e, List<string> args)
         {
             MethodInfo command = FindCommand(cmd);
+            if (command == null)
+            {
+                await e.Message.RespondAsync($"Unknown command, type `{_baseOptions.CommandPrefix} help` for all commands");
+                return;
+            }
+            _logger.LogInformation($"Command {command} with args {string.Join(" ", args)} run by {e.Author.Username}");
             await (Task)command.Invoke(_commandModules.FirstOrDefault(x => x.GetType().FullName == command.DeclaringType.FullName), new object[] { e, args });
         }
         public async Task ProcessCommands(DiscordClient sender, MessageCreateEventArgs e)
@@ -78,14 +84,7 @@ namespace WBot2.Helpers
                 return;
             }
             args = args.Skip(1).ToList();
-            var command = FindCommand(cmd);
-            if (command == null)
-            {
-                await e.Message.RespondAsync($"Unknown command, type `{_baseOptions.CommandPrefix} help` for all commands");
-                return;
-            }
 
-            _logger.LogInformation($"Command {command} with args {string.Join(" ", args)} run by {e.Author.Username}");
             try
             {
                 await e.Channel.TriggerTypingAsync();
@@ -93,7 +92,7 @@ namespace WBot2.Helpers
             }
             catch (Exception ex)
             {
-                _logger.LogInformation(ex, $"Failed to run {command} with args {string.Join(" ", args)} run by {e.Author.Username}");
+                _logger.LogInformation(ex, $"Failed to run {FindCommand(cmd)} with args {string.Join(" ", args)} run by {e.Author.Username}");
                 await e.Message.RespondAsync($"Failed to run command: {ex.Message}");
             }
         }
