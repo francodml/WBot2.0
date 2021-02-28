@@ -12,7 +12,7 @@ namespace WBot2.Commands.Attributes
         public CommandAttribute(string name) => this.Name = name;
     }
 
-    [System.AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     sealed class AliasAttribute : Attribute
     {
         public string[] Aliases { get; private set; }
@@ -24,17 +24,23 @@ namespace WBot2.Commands.Attributes
     }
 
     [AttributeUsage(AttributeTargets.Method)]
-    public class PermissionsAttribute : Attribute
-    {
-        public DSharpPlus.Permissions Permissions { get; private set; }
-        public PermissionsAttribute(DSharpPlus.Permissions perms) => this.Permissions = perms;
-    }
-
-    [AttributeUsage(AttributeTargets.Method)]
     public class DescriptionAttribute : Attribute
     {
         public string Description { get; private set; }
 
         public DescriptionAttribute(string description) => Description = description;
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    public class NeedsPermissionsAttribute : Attribute
+    {
+        public DSharpPlus.Permissions Permissions { get; private set; }
+        public NeedsPermissionsAttribute(DSharpPlus.Permissions perms) => this.Permissions = perms;
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    public class OwnerOnlyAttribute : Attribute
+    {
+
     }
 }
