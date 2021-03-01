@@ -15,7 +15,7 @@ namespace WBot2.Commands
         {
             _serviceProvider = serviceProvider;
             _baseOptions = _serviceProvider.GetRequiredService<IOptions<DiscordOptions>>().Value;
-            _discordClient = serviceProvider.GetRequiredService<DiscordClient>();
+            _discordClient = _serviceProvider.GetRequiredService<DiscordClient>();
         }
     }
 }

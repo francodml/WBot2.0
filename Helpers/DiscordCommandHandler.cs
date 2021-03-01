@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using DSharpPlus;
-using DSharpPlus.Entities;
+﻿using DSharpPlus;
 using DSharpPlus.EventArgs;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using WBot2.Data;
-using System.Reflection;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using WBot2.Commands;
 using WBot2.Commands.Attributes;
-using Microsoft.Extensions.Logging;
+using WBot2.Data;
+using WBot2.Extensions;
 
 namespace WBot2.Helpers
 {
@@ -74,14 +73,24 @@ namespace WBot2.Helpers
                 return;
             }
 
-            if (command.GetCustomAttribute<OwnerOnlyAttribute>() != null && e.Author.Id != _baseOptions.Owner)
+            if (command.HasCustomAttribute<OwnerOnlyAttribute>() && e.Author.Id != _baseOptions.Owner)
             {
                 await e.Message.RespondAsync("This command can only be run by the bot owner.");
                 return;
             }
-
-            var aMember = await e.Guild.GetMemberAsync(e.Author.Id);
-            var permscheck = e.Channel.PermissionsFor(aMember).HasPermission(command.GetCustomAttribute<NeedsPermissionsAttribute>().Permissions);
+            
+            if (command.HasCustomAttribute<NeedsPermissionsAttribute>())
+            {
+                var aMember = await e.Guild.GetMemberAsync(e.Author.Id);
+                Permissions mPerms = e.Channel.PermissionsFor(aMember);
+                Permissions cmdPerms = command.GetCustomAttribute<NeedsPermissionsAttribute>().Permission;
+                bool permscheck = mPerms.HasPermission(cmdPerms);
+                if (permscheck == false)
+                {
+                    await e.Message.RespondAsync("You don't have the required permissions to run this command.");
+                    return;
+                }
+            }
 
             _logger.LogInformation($"Command {command} with args {string.Join(" ", args)} run by {e.Author.Username}");
             await (Task)command.Invoke(_commandModules.FirstOrDefault(x => x.GetType().FullName == command.DeclaringType.FullName), new object[] { e, args });

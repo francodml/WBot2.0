@@ -1,4 +1,5 @@
 ﻿using System;
+using DSharpPlus;
 using DSharpPlus.Entities;
 using System.Collections.Generic;
 using System.Text;
@@ -34,8 +35,8 @@ namespace WBot2.Commands.Attributes
     [AttributeUsage(AttributeTargets.Method)]
     public class NeedsPermissionsAttribute : Attribute
     {
-        public DSharpPlus.Permissions Permissions { get; private set; }
-        public NeedsPermissionsAttribute(DSharpPlus.Permissions perms) => this.Permissions = perms;
+        public Permissions Permission { get; private set; }
+        public NeedsPermissionsAttribute(Permissions perms) => this.Permission = perms;
     }
 
     [AttributeUsage(AttributeTargets.Method)]
