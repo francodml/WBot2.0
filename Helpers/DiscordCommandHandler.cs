@@ -73,21 +73,15 @@ namespace WBot2.Helpers
                 return;
             }
 
-            if (command.HasCustomAttribute<OwnerOnlyAttribute>() && e.Author.Id != _baseOptions.Owner)
+            var checkAttribs = command.GetCustomAttributes().Where(x => x.GetType().IsAssignableTo(typeof(ICheckAttribute)));
+
+            foreach (ICheckAttribute attribute in checkAttribs)
             {
-                await e.Message.RespondAsync("This command can only be run by the bot owner.");
-                return;
-            }
-            
-            if (command.HasCustomAttribute<NeedsPermissionsAttribute>())
-            {
-                var aMember = await e.Guild.GetMemberAsync(e.Author.Id);
-                Permissions mPerms = e.Channel.PermissionsFor(aMember);
-                Permissions cmdPerms = command.GetCustomAttribute<NeedsPermissionsAttribute>().Permission;
-                bool permscheck = mPerms.HasPermission(cmdPerms);
-                if (permscheck == false)
+                if (await attribute.CheckAttribute(e, _serviceProvider) != false)
+                    continue;
+                else
                 {
-                    await e.Message.RespondAsync("You don't have the required permissions to run this command.");
+                    await e.Message.RespondAsync($"Command failed: {attribute.FailString}");
                     return;
                 }
             }
