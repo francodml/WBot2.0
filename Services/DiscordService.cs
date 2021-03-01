@@ -61,7 +61,7 @@ namespace WBot2.Services
         {
             if (e.Author.IsBot)
                 return;
-            await _commandHandler.ProcessCommands(sender, e);
+            _commandHandler.ProcessCommands(sender, e);
         }
         public async Task StopAsync(CancellationToken cancellationToken)
         {

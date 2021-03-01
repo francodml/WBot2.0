@@ -28,5 +28,13 @@ namespace WBot2.Commands.MilangaTactica
         {
             await e.Message.RespondAsync($"You told me to say: '{string.Join(" ", args)}'");
         }
+
+        [Command("uwu")]
+        [NeedsPermissions(DSharpPlus.Permissions.Administrator | DSharpPlus.Permissions.BanMembers)]
+        public async Task Uwu(MessageCreateEventArgs e, List<string> args)
+        {
+            await Task.Delay(10000);
+            await e.Message.RespondAsync("UwU");
+        }
     }
 }
