@@ -23,7 +23,6 @@ namespace WBot2.Commands.Attributes
     sealed class AliasAttribute : Attribute
     {
         public string[] Aliases { get; private set; }
-        // This is a positional argument
         public AliasAttribute(params string[] aliases)
         {
             this.Aliases = aliases;
