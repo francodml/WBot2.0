@@ -10,7 +10,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using WBot2.Commands;
 using WBot2.Commands.Attributes;
-using WBot2.Converters;
 using WBot2.Helpers.Interfaces;
 using WBot2.Data;
 using WBot2.Extensions;
