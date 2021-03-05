@@ -10,6 +10,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using WBot2.Commands;
 using WBot2.Commands.Attributes;
+using WBot2.Converters;
+using WBot2.Helpers.Interfaces;
 using WBot2.Data;
 using WBot2.Extensions;
 
@@ -21,23 +23,21 @@ namespace WBot2.Helpers
         protected readonly ILogger<DiscordCommandHandler> _logger;
         protected readonly DiscordOptions _baseOptions;
         protected readonly DiscordClient _discordClient;
+        protected readonly ConverterHelper _converterHelper;
 
         private List<BaseCommandModule> _commandModules;
         private List<MethodInfo> _commands;
-        public DiscordCommandHandler(IServiceProvider serviceProvider, ILogger<DiscordCommandHandler> logger, DiscordClient discordClient)
+        public DiscordCommandHandler(IServiceProvider serviceProvider, ILogger<DiscordCommandHandler> logger, DiscordClient discordClient, ConverterHelper converterHelper)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
             _baseOptions = _serviceProvider.GetRequiredService<IOptions<DiscordOptions>>().Value;
             _discordClient = discordClient;
+            _converterHelper = converterHelper;
 
-            _commandModules = new();
+            _commandModules = StaticHelpers.GetModules<BaseCommandModule>( new object[] { _serviceProvider });
+            //_commandModules = new();
             _commands = new();
-            foreach(Type type in Assembly.GetAssembly(typeof(BaseCommandModule)).GetTypes()
-                .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(BaseCommandModule))))
-            {
-                _commandModules.Add((BaseCommandModule)Activator.CreateInstance(type, new object[] { _serviceProvider }));
-            }
 
             foreach (BaseCommandModule module in _commandModules)
             {

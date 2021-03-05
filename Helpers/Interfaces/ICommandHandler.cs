@@ -6,7 +6,7 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
-namespace WBot2.Helpers
+namespace WBot2.Helpers.Interfaces
 {
     public interface ICommandHandler
     {
