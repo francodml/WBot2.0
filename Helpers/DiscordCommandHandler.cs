@@ -23,17 +23,15 @@ namespace WBot2.Helpers
         protected readonly ILogger<DiscordCommandHandler> _logger;
         protected readonly DiscordOptions _baseOptions;
         protected readonly DiscordClient _discordClient;
-        protected readonly ConverterHelper _converterHelper;
 
         private List<BaseCommandModule> _commandModules;
         private List<MethodInfo> _commands;
-        public DiscordCommandHandler(IServiceProvider serviceProvider, ILogger<DiscordCommandHandler> logger, DiscordClient discordClient, ConverterHelper converterHelper)
+        public DiscordCommandHandler(IServiceProvider serviceProvider, ILogger<DiscordCommandHandler> logger, DiscordClient discordClient)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
             _baseOptions = _serviceProvider.GetRequiredService<IOptions<DiscordOptions>>().Value;
             _discordClient = discordClient;
-            _converterHelper = converterHelper;
 
             _commandModules = StaticHelpers.GetModules<BaseCommandModule>( new object[] { _serviceProvider });
             //_commandModules = new();
