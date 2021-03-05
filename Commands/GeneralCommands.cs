@@ -13,20 +13,20 @@ namespace WBot2.Commands
     public class GeneralCommands : BaseCommandModule
     {
         protected readonly ILogger _logger;
-        protected readonly ICommandHandler _commandHandler;
-        protected readonly IHelpFormatter _helpFormatter;
+        protected readonly IHelpFormatter<DiscordEmbedBuilder> _helpFormatter;
 
         public GeneralCommands(IServiceProvider serviceProvider, ICommandHandler commandHandler) : base(serviceProvider, commandHandler)
         {
             _logger = serviceProvider.GetRequiredService<ILogger<GeneralCommands>>();
-            _helpFormatter = serviceProvider.GetRequiredService<IHelpFormatter>();
+            _helpFormatter = serviceProvider.GetRequiredService<IHelpFormatter<DiscordEmbedBuilder>>();
         }
 
         [Command("help"), Description("Shows all commands and their descriptions")]
         public async Task Help(MessageCreateEventArgs e, List<string> args)
         {
-            DiscordEmbed embed = await _helpFormatter.FormatHelp(_commandHandler);
-            await e.Message.RespondAsync(embed);
+            DiscordEmbedBuilder embed = await _helpFormatter.FormatHelp(RegisteringHandler);
+            embed.WithAuthor(_discordClient.CurrentUser.Username, iconUrl:_discordClient.CurrentUser.AvatarUrl);
+            await e.Message.RespondAsync($"{e.Author.Mention} these are the available commands",embed);
         }
 
         [Command("ping")]
