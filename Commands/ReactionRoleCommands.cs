@@ -6,15 +6,16 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using WBot2.Commands.Attributes;
 using WBot2.Helpers.Interfaces;
+using WBot2.Helpers;
 
 namespace WBot2.Commands
 {
     class ReactionRoleCommands : BaseCommandModule
     {
-        private readonly IReactionHelper _reactionHelper;
+        private readonly ReactionRolesHelper _reactionHelper;
         public ReactionRoleCommands(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            _reactionHelper = serviceProvider.GetRequiredService<IReactionHelper>();
+            _reactionHelper = serviceProvider.GetRequiredService<ReactionRolesHelper>();
         }
 
         [Command("watchmessage")]

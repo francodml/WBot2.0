@@ -54,7 +54,7 @@ namespace WBot2
             services.ConfigureWithValidation<DiscordOptions>(config.GetSection("Discord"));
             services.AddHostedService<DiscordService>();
             services.AddSingleton<ICommandHandler, DiscordCommandHandler>();
-
+            services.AddSingleton<ReactionRolesHelper>();
         }
 
         private static void ConfigureLogging(HostBuilderContext hostContext, ILoggingBuilder loggingBuilder)
