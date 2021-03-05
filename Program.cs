@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using WBot2.Data;
 using WBot2.Services;
 using WBot2.Helpers;
+using WBot2.Helpers.Interfaces;
 
 namespace WBot2
 {
