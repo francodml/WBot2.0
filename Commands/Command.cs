@@ -15,7 +15,15 @@ namespace WBot2.Commands
 
         public string Name => Method.GetCustomAttribute<CommandAttribute>().Name;
 
-        public string Description => Method.GetCustomAttribute<DescriptionAttribute>().Description;
+        public string Description
+        {
+            get
+            {
+                if (!Method.HasCustomAttribute<DescriptionAttribute>())
+                    return "No description";
+                return Method.GetCustomAttribute<DescriptionAttribute>().Description;
+            }
+        }
 
         public Task Call(BaseCommandModule moduleInstance, object[] args) => (Task)Method.Invoke(moduleInstance, args);
 
