@@ -46,7 +46,7 @@ namespace WBot2
         private static void ConfigureServices(HostBuilderContext hostContext, IServiceCollection services)
         {
             var config = hostContext.Configuration;
-            services.AddTransient(_ => new DiscordClient(new DiscordConfiguration
+            services.AddSingleton(_ => new DiscordClient(new DiscordConfiguration
             {
                 Token = config["Discord:Token"],
                 TokenType = TokenType.Bot
@@ -56,7 +56,7 @@ namespace WBot2
             services.AddHostedService<DiscordService>();
             services.AddSingleton<ICommandHandler, DiscordCommandHandler>();
             services.AddSingleton<ReactionRolesHelper>();
-            services.AddSingleton<IHelpFormatter<DiscordEmbedBuilder>, BasicHelpFormatter>();
+            services.AddTransient<IHelpFormatter<DiscordEmbedBuilder>, BasicHelpFormatter>();
         }
 
         private static void ConfigureLogging(HostBuilderContext hostContext, ILoggingBuilder loggingBuilder)
