@@ -5,8 +5,8 @@ using DSharpPlus.Entities;
 
 namespace WBot2.Helpers.Interfaces
 {
-    public interface IHelpFormatter
+    public interface IHelpFormatter<T>
     {
-        public abstract Task<DiscordEmbed> FormatHelp(ICommandHandler commandHandler);
+        public abstract Task<T> FormatHelp(ICommandHandler commandHandler);
     }
 }

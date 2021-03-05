@@ -9,6 +9,7 @@ using WBot2.Data;
 using WBot2.Services;
 using WBot2.Helpers;
 using WBot2.Helpers.Interfaces;
+using DSharpPlus.Entities;
 
 namespace WBot2
 {
@@ -55,7 +56,7 @@ namespace WBot2
             services.AddHostedService<DiscordService>();
             services.AddSingleton<ICommandHandler, DiscordCommandHandler>();
             services.AddSingleton<ReactionRolesHelper>();
-            services.AddSingleton<IHelpFormatter, BasicHelpFormatter>();
+            services.AddSingleton<IHelpFormatter<DiscordEmbedBuilder>, BasicHelpFormatter>();
         }
 
         private static void ConfigureLogging(HostBuilderContext hostContext, ILoggingBuilder loggingBuilder)
