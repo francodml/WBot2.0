@@ -24,7 +24,7 @@ namespace WBot2.Helpers
         protected readonly DiscordClient _discordClient;
 
         private List<BaseCommandModule> _commandModules;
-        private List<MethodInfo> _commands;
+        public List<Command> Commands { get; }
         public DiscordCommandHandler(IServiceProvider serviceProvider, ILogger<DiscordCommandHandler> logger, DiscordClient discordClient)
         {
             _serviceProvider = serviceProvider;
@@ -32,24 +32,29 @@ namespace WBot2.Helpers
             _baseOptions = _serviceProvider.GetRequiredService<IOptions<DiscordOptions>>().Value;
             _discordClient = discordClient;
 
-            _commandModules = StaticHelpers.GetModules<BaseCommandModule>( new object[] { _serviceProvider });
+            _commandModules = StaticHelpers.GetModules<BaseCommandModule>( new object[] { _serviceProvider, this });
             //_commandModules = new();
-            _commands = new();
+            Commands = new();
 
             foreach (BaseCommandModule module in _commandModules)
             {
-                var cmds = module.GetType().GetMethods().Where(x => x.GetCustomAttribute<CommandAttribute>() != null);
-                foreach (MethodInfo cmd in cmds)
+                var infos = module.GetType().GetMethods().Where(x => x.GetCustomAttribute<CommandAttribute>() != null);
+                foreach (MethodInfo info in infos)
                 {
-                    _commands.Add(cmd);
+                    Command cmd = new()
+                    {
+                        Method = info,
+                        RegisteringModule = module
+                    };
+                    Commands.Add(cmd);
                 }
             }
         }
 
-        private MethodInfo FindCommand(string cmd)
+        private Command FindCommand(string cmd)
         {
             //TODO: implement command overloading (optional args)
-            return _commands.FirstOrDefault(x =>
+            return Commands.FirstOrDefault(x =>
             {
                 AliasAttribute attr = x.GetCustomAttribute<AliasAttribute>();
                 bool aliastest = false;
@@ -61,14 +66,15 @@ namespace WBot2.Helpers
             });
         }
 
-        private async Task RunCommandAsync(string cmd, MessageCreateEventArgs e, List<string> args)
+        private async Task RunCommandAsync(string cmdn, MessageCreateEventArgs e, List<string> args)
         {
-            MethodInfo command = FindCommand(cmd);
-            if (command == null)
+            Command? cmd = FindCommand(cmdn);
+            if (cmd == null)
             {
                 await e.Message.RespondAsync($"Unknown command, type `{_baseOptions.CommandPrefix} help` for all commands");
                 return;
             }
+            Command command = cmd.GetValueOrDefault();
 
             var checkAttribs = command.GetCustomAttributes().Where(x => x.GetType().IsAssignableTo(typeof(ICheckAttribute)));
 
@@ -83,8 +89,8 @@ namespace WBot2.Helpers
                 }
             }
 
-            _logger.LogInformation($"Command {command} with args {string.Join(" ", args)} run by {e.Author.Username}");
-            await (Task)command.Invoke(_commandModules.FirstOrDefault(x => x.GetType().FullName == command.DeclaringType.FullName), new object[] { e, args });
+            _logger.LogInformation($"Command {command.Name} with args {string.Join(" ", args)} run by {e.Author.Username}");
+            await command.Call(_commandModules.FirstOrDefault(x => x.GetType().FullName == command.Method.DeclaringType.FullName), new object[] { e, args });
         }
         public async Task ProcessCommands(DiscordClient sender, MessageCreateEventArgs e)
         {
@@ -99,7 +105,7 @@ namespace WBot2.Helpers
             if (string.IsNullOrEmpty(cmd) || cmd == "help")
             {
                 //TODO: Move this to a dedicated "help" command, leave this as fallback if one isn't defined. Add command descriptions
-                await e.Message.RespondAsync($"Commands: {string.Join(", ", _commands.Select(x => x.GetCustomAttribute<CommandAttribute>().Name))}");
+                await e.Message.RespondAsync($"Commands: {string.Join(", ", Commands.Select(x => x.GetCustomAttribute<CommandAttribute>().Name))}");
                 return;
             }
             args = args.Skip(1).ToList();
