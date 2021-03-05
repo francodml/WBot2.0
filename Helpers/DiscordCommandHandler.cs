@@ -21,15 +21,17 @@ namespace WBot2.Helpers
         protected readonly ILogger<DiscordCommandHandler> _logger;
         protected readonly DiscordOptions _baseOptions;
         protected readonly DiscordClient _discordClient;
+        protected readonly ConverterHelper _converterHelper;
 
         private List<BaseCommandModule> _commandModules;
         private List<MethodInfo> _commands;
-        public DiscordCommandHandler(IServiceProvider serviceProvider, ILogger<DiscordCommandHandler> logger, DiscordClient discordClient)
+        public DiscordCommandHandler(IServiceProvider serviceProvider, ILogger<DiscordCommandHandler> logger, DiscordClient discordClient, ConverterHelper converterHelper)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
             _baseOptions = _serviceProvider.GetRequiredService<IOptions<DiscordOptions>>().Value;
             _discordClient = discordClient;
+            _converterHelper = converterHelper;
 
             _commandModules = new();
             _commands = new();
@@ -64,6 +66,19 @@ namespace WBot2.Helpers
             });
         }
 
+        private async object[] BuildCommandArgs(MethodInfo command, List<string> args, MessageCreateEventArgs e)
+        {
+            object[] cmdargs = { };
+            ParameterInfo[] parameters = command.GetParameters();
+            int i = 0;
+            foreach (ParameterInfo parameter in parameters)
+            {
+                var partype = parameter.GetType();
+
+                var converterParameter = await _converterHelper.ConvertParameterAsync(args[i], e, partype);
+            }
+        }
+
         private async Task RunCommandAsync(string cmd, MessageCreateEventArgs e, List<string> args)
         {
             MethodInfo command = FindCommand(cmd);
@@ -85,6 +100,8 @@ namespace WBot2.Helpers
                     return;
                 }
             }
+
+            object[] cmdargs = BuildCommandArgs(command, args);
 
             _logger.LogInformation($"Command {command} with args {string.Join(" ", args)} run by {e.Author.Username}");
             await (Task)command.Invoke(_commandModules.FirstOrDefault(x => x.GetType().FullName == command.DeclaringType.FullName), new object[] { e, args });

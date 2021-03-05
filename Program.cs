@@ -53,6 +53,7 @@ namespace WBot2
             services.ConfigureWithValidation<DiscordOptions>(config.GetSection("Discord"));
             services.AddHostedService<DiscordService>();
             services.AddSingleton<ICommandHandler, DiscordCommandHandler>();
+            services.AddSingleton(new ConverterHelper());
 
         }
 
