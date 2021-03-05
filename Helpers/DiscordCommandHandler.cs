@@ -102,12 +102,8 @@ namespace WBot2.Helpers
                                            : new string[] { element })  // Keep the entire item
                      .SelectMany(element => element).ToList();
             var cmd = args.FirstOrDefault();
-            if (string.IsNullOrEmpty(cmd) || cmd == "help")
-            {
-                //TODO: Move this to a dedicated "help" command, leave this as fallback if one isn't defined. Add command descriptions
-                await e.Message.RespondAsync($"Commands: {string.Join(", ", Commands.Select(x => x.GetCustomAttribute<CommandAttribute>().Name))}");
+            if (string.IsNullOrEmpty(cmd))
                 return;
-            }
             args = args.Skip(1).ToList();
 
             try
