@@ -11,7 +11,7 @@ namespace WBot2.Commands
     {
         public MethodInfo Method { init; get; }
 
-        public BaseCommandModule RegisteringModule { init; get; }
+        public BaseCommandModule Module { init; get; }
 
         public string Name => Method.GetCustomAttribute<CommandAttribute>().Name;
 

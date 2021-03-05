@@ -44,7 +44,7 @@ namespace WBot2.Helpers
                     Command cmd = new()
                     {
                         Method = info,
-                        RegisteringModule = module
+                        Module = module
                     };
                     Commands.Add(cmd);
                 }
