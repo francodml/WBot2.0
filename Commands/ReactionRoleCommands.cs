@@ -13,12 +13,12 @@ namespace WBot2.Commands
     class ReactionRoleCommands : BaseCommandModule
     {
         private readonly ReactionRolesHelper _reactionHelper;
-        public ReactionRoleCommands(IServiceProvider serviceProvider) : base(serviceProvider)
+        public ReactionRoleCommands(IServiceProvider serviceProvider, ICommandHandler commandHandler) : base(serviceProvider, commandHandler)
         {
             _reactionHelper = serviceProvider.GetRequiredService<ReactionRolesHelper>();
         }
 
-        [Command("watchmessage")]
+        [Command("watchmessage"), Description("Adds the specified message to the list of messages to watch for reaction changes")]
         public async Task AddWatchedMessage()
         {
             throw new NotImplementedException();
