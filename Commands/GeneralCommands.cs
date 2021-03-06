@@ -12,6 +12,7 @@ namespace WBot2.Commands
 {
     public class GeneralCommands : BaseCommandModule
     {
+        public override string ModuleName => "General Commands";
         protected readonly ILogger _logger;
         protected readonly IHelpFormatter<DiscordEmbedBuilder> _helpFormatter;
 
@@ -25,17 +26,19 @@ namespace WBot2.Commands
         public async Task Help(MessageCreateEventArgs e, List<string> args)
         {
             DiscordEmbedBuilder embed = await _helpFormatter.FormatHelp(RegisteringHandler);
-            embed.WithAuthor(_discordClient.CurrentUser.Username, iconUrl:_discordClient.CurrentUser.AvatarUrl);
+            var member = await e.Guild.GetMemberAsync(e.Author.Id);
+            embed.WithAuthor(_discordClient.CurrentUser.Username, iconUrl:_discordClient.CurrentUser.AvatarUrl)
+                .WithColor(member.Color);
             await e.Message.RespondAsync($"{e.Author.Mention} these are the available commands",embed);
         }
 
-        [Command("ping")]
+        [Command("ping"), Description("Pings the bot, and gets a reply!")]
         [Alias("pong", "p")]
         public async Task Ping(MessageCreateEventArgs e, List<string> args)
         {
             await e.Message.RespondAsync($"{e.Author.Mention} Pong!");
         }
-        [Command("say")]
+        [Command("say"), Description("Makes the bot say something")]
         public async Task Say(MessageCreateEventArgs e, List<string> args)
         {
             await e.Message.RespondAsync($"You told me to say: '{string.Join(" ", args)}'");

@@ -9,6 +9,7 @@ namespace WBot2.Commands
 {
     public class BaseCommandModule
     {
+        public virtual string ModuleName { get => this.GetType().Name; }
         protected readonly IServiceProvider _serviceProvider;
         protected readonly DiscordOptions _baseOptions;
         protected readonly DiscordClient _discordClient;

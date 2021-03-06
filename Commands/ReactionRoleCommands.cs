@@ -18,6 +18,8 @@ namespace WBot2.Commands
             _reactionHelper = serviceProvider.GetRequiredService<ReactionRolesHelper>();
         }
 
+        public override string ModuleName => "Reaction Roles";
+
         [Command("watchmessage"), Description("Adds the specified message to the list of messages to watch for reaction changes")]
         public async Task AddWatchedMessage()
         {
