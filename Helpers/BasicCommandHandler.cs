@@ -16,16 +16,16 @@ using WBot2.Extensions;
 
 namespace WBot2.Helpers
 {
-    public class DiscordCommandHandler : ICommandHandler
+    public class BasicCommandHandler : ICommandHandler
     {
         protected readonly IServiceProvider _serviceProvider;
-        protected readonly ILogger<DiscordCommandHandler> _logger;
+        protected readonly ILogger<BasicCommandHandler> _logger;
         protected readonly DiscordOptions _baseOptions;
         protected readonly DiscordClient _discordClient;
 
         public List<BaseCommandModule> CommandModules { get; }
         public List<Command> Commands { get; }
-        public DiscordCommandHandler(IServiceProvider serviceProvider, ILogger<DiscordCommandHandler> logger, DiscordClient discordClient)
+        public BasicCommandHandler(IServiceProvider serviceProvider, ILogger<BasicCommandHandler> logger, DiscordClient discordClient)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
