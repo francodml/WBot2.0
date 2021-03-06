@@ -14,5 +14,7 @@ namespace WBot2.Helpers.Interfaces
         Task ProcessCommands(DiscordClient sender, MessageCreateEventArgs e);
 
         public List<Command> Commands { get; }
+
+        public List<BaseCommandModule> CommandModules { get; }
     }
 }
