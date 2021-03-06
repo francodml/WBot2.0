@@ -23,7 +23,7 @@ namespace WBot2.Helpers
         protected readonly DiscordOptions _baseOptions;
         protected readonly DiscordClient _discordClient;
 
-        private List<BaseCommandModule> _commandModules;
+        public List<BaseCommandModule> CommandModules { get; }
         public List<Command> Commands { get; }
         public DiscordCommandHandler(IServiceProvider serviceProvider, ILogger<DiscordCommandHandler> logger, DiscordClient discordClient)
         {
@@ -32,11 +32,11 @@ namespace WBot2.Helpers
             _baseOptions = _serviceProvider.GetRequiredService<IOptions<DiscordOptions>>().Value;
             _discordClient = discordClient;
 
-            _commandModules = StaticHelpers.GetModules<BaseCommandModule>( new object[] { _serviceProvider, this });
+            CommandModules = StaticHelpers.GetModules<BaseCommandModule>( new object[] { _serviceProvider, this });
             //_commandModules = new();
             Commands = new();
 
-            foreach (BaseCommandModule module in _commandModules)
+            foreach (BaseCommandModule module in CommandModules)
             {
                 var infos = module.GetType().GetMethods().Where(x => x.GetCustomAttribute<CommandAttribute>() != null);
                 foreach (MethodInfo info in infos)
@@ -90,7 +90,7 @@ namespace WBot2.Helpers
             }
 
             _logger.LogInformation($"Command {command.Name} with args {string.Join(" ", args)} run by {e.Author.Username}");
-            await command.Call(_commandModules.FirstOrDefault(x => x.GetType().FullName == command.Method.DeclaringType.FullName), new object[] { e, args });
+            await command.Call(CommandModules.FirstOrDefault(x => x.GetType().FullName == command.Method.DeclaringType.FullName), new object[] { e, args });
         }
         public async Task ProcessCommands(DiscordClient sender, MessageCreateEventArgs e)
         {
