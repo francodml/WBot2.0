@@ -18,13 +18,15 @@ namespace WBot2.Services
         private readonly DiscordOptions _options;
         private readonly IServiceProvider _serviceProvider;
         private readonly ICommandHandler _commandHandler;
+        private readonly IReactionHelper _reactionHelper;
 
         public DiscordService(
             ILogger<DiscordService> logger,
             DiscordClient client,
             IOptions<DiscordOptions> options,
             IServiceProvider serviceProvider,
-            ICommandHandler commandHandler
+            ICommandHandler commandHandler,
+            IReactionHelper reactionHelper
             )
         {
             _logger = logger;
@@ -32,6 +34,7 @@ namespace WBot2.Services
             _options = options.Value;
             _serviceProvider = serviceProvider;
             _commandHandler = commandHandler;
+            _reactionHelper = reactionHelper;
         }
         public async Task StartAsync(CancellationToken cancellationToken)
         {
