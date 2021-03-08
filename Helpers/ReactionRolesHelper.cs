@@ -11,7 +11,7 @@ namespace WBot2.Helpers
 {
     class ReactionRolesHelper : IReactionHelper
     {
-        public async Task HandleReactionAdded(MessageReactionAddEventArgs e)
+        public async Task ReactionAdded(MessageReactionAddEventArgs e)
         {
 
         }
