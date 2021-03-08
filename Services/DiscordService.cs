@@ -78,7 +78,7 @@ namespace WBot2.Services
 
         public async Task MessageReaction(DiscordClient sender, MessageReactionAddEventArgs e)
         {
-            //TODO: do stuff.
+            await _reactionHelper.ReactionAdded(e);
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
