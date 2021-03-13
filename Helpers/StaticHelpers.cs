@@ -12,12 +12,14 @@ namespace WBot2.Helpers
         public static List<T> GetModules<T>(object[] constructorArgs)
         {
             List<T> list = new();
-            foreach (Type type in Assembly.GetAssembly(typeof(T)).GetTypes()
-                .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(T))))
+            foreach (Type type in GetModuleTypes<T>())
             {
                 list.Add((T)Activator.CreateInstance(type, constructorArgs));
             }
             return list;
         }
+
+        public static List<Type> GetModuleTypes<T>()
+            => Assembly.GetAssembly(typeof(T)).GetTypes().Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(T))).ToList();
     }
 }
