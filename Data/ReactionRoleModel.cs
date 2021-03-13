@@ -12,7 +12,11 @@ namespace WBot2.Data
     public class ReactionRoleContext : DbContext
     {
         public DbSet<Guild> Guilds { get; set; }
-        public DbSet<RRMessage> Posts { get; set; }
+        public DbSet<RRMessage> WatchedMessages { get; set; }
+
+        public ReactionRoleContext( DbContextOptions<ReactionRoleContext> options ) : base(options)
+        {
+        }
 
         /*protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.UseSqlite("Data Source=reactionroles.db");*/
@@ -37,6 +41,5 @@ namespace WBot2.Data
         }
 
         public ulong GuildID { get; set; }
-        public Guild Guild { get; set; }
     }
 }
