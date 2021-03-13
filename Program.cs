@@ -57,7 +57,7 @@ namespace WBot2
             services.ConfigureWithValidation<DiscordOptions>(config.GetSection("Discord"));
             services.AddHostedService<DiscordService>();
             services.AddSingleton<ICommandHandler, BasicCommandHandler>();
-            services.AddSingleton<ReactionRolesHelper>();
+            services.AddSingleton<IReactionHelper, ReactionRolesHelper>();
             services.AddTransient<IHelpFormatter<DiscordEmbedBuilder>, BasicHelpFormatter>();
 
             services.AddDbContext<ReactionRoleContext>(options =>
