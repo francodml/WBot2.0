@@ -4,10 +4,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using WBot2.Data;
 using WBot2.Services;
+using WBot2.Extensions;
 using WBot2.Helpers;
+using WBot2.Helpers.Interfaces;
+using DSharpPlus.Entities;
 
 namespace WBot2
 {
@@ -44,7 +48,7 @@ namespace WBot2
         private static void ConfigureServices(HostBuilderContext hostContext, IServiceCollection services)
         {
             var config = hostContext.Configuration;
-            services.AddTransient(_ => new DiscordClient(new DiscordConfiguration
+            services.AddSingleton(_ => new DiscordClient(new DiscordConfiguration
             {
                 Token = config["Discord:Token"],
                 TokenType = TokenType.Bot
@@ -52,9 +56,12 @@ namespace WBot2
 
             services.ConfigureWithValidation<DiscordOptions>(config.GetSection("Discord"));
             services.AddHostedService<DiscordService>();
-            services.AddSingleton<ICommandHandler, DiscordCommandHandler>();
-            services.AddSingleton(new ConverterHelper());
+            services.AddSingleton<ICommandHandler, BasicCommandHandler>();
+            services.AddSingleton<IReactionHelper, ReactionRolesHelper>();
+            services.AddTransient<IHelpFormatter<DiscordEmbedBuilder>, BasicHelpFormatter>();
 
+            services.AddDbContext<ReactionRoleContext>(options =>
+                options.UseSqlite(config.GetConnectionString("RRDatabase")));
         }
 
         private static void ConfigureLogging(HostBuilderContext hostContext, ILoggingBuilder loggingBuilder)

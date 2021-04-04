@@ -10,22 +10,23 @@ using System.Reflection;
 using System.Threading.Tasks;
 using WBot2.Commands;
 using WBot2.Commands.Attributes;
+using WBot2.Helpers.Interfaces;
 using WBot2.Data;
 using WBot2.Extensions;
 
 namespace WBot2.Helpers
 {
-    public class DiscordCommandHandler : ICommandHandler
+    public class BasicCommandHandler : ICommandHandler
     {
         protected readonly IServiceProvider _serviceProvider;
-        protected readonly ILogger<DiscordCommandHandler> _logger;
+        protected readonly ILogger<BasicCommandHandler> _logger;
         protected readonly DiscordOptions _baseOptions;
         protected readonly DiscordClient _discordClient;
         protected readonly ConverterHelper _converterHelper;
 
-        private List<BaseCommandModule> _commandModules;
-        private List<MethodInfo> _commands;
-        public DiscordCommandHandler(IServiceProvider serviceProvider, ILogger<DiscordCommandHandler> logger, DiscordClient discordClient, ConverterHelper converterHelper)
+        public List<BaseCommandModule> CommandModules { get; }
+        public List<Command> Commands { get; }
+        public BasicCommandHandler(IServiceProvider serviceProvider, ILogger<BasicCommandHandler> logger, DiscordClient discordClient)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
@@ -33,28 +34,29 @@ namespace WBot2.Helpers
             _discordClient = discordClient;
             _converterHelper = converterHelper;
 
-            _commandModules = new();
-            _commands = new();
-            foreach(Type type in Assembly.GetAssembly(typeof(BaseCommandModule)).GetTypes()
-                .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(BaseCommandModule))))
-            {
-                _commandModules.Add((BaseCommandModule)Activator.CreateInstance(type, new object[] { _serviceProvider }));
-            }
+            CommandModules = StaticHelpers.GetModules<BaseCommandModule>( new object[] { _serviceProvider, this });
+            //_commandModules = new();
+            Commands = new();
 
-            foreach (BaseCommandModule module in _commandModules)
+            foreach (BaseCommandModule module in CommandModules)
             {
-                var cmds = module.GetType().GetMethods().Where(x => x.GetCustomAttribute<CommandAttribute>() != null);
-                foreach (MethodInfo cmd in cmds)
+                var infos = module.GetType().GetMethods().Where(x => x.GetCustomAttribute<CommandAttribute>() != null);
+                foreach (MethodInfo info in infos)
                 {
-                    _commands.Add(cmd);
+                    Command cmd = new()
+                    {
+                        Method = info,
+                        Module = module
+                    };
+                    Commands.Add(cmd);
                 }
             }
         }
 
-        private MethodInfo FindCommand(string cmd)
+        private Command FindCommand(string cmd)
         {
             //TODO: implement command overloading (optional args)
-            return _commands.FirstOrDefault(x =>
+            return Commands.FirstOrDefault(x =>
             {
                 AliasAttribute attr = x.GetCustomAttribute<AliasAttribute>();
                 bool aliastest = false;
@@ -66,27 +68,15 @@ namespace WBot2.Helpers
             });
         }
 
-        private async object[] BuildCommandArgs(MethodInfo command, List<string> args, MessageCreateEventArgs e)
+        private async Task RunCommandAsync(string cmdn, MessageCreateEventArgs e, List<string> args)
         {
-            object[] cmdargs = { };
-            ParameterInfo[] parameters = command.GetParameters();
-            int i = 0;
-            foreach (ParameterInfo parameter in parameters)
-            {
-                var partype = parameter.GetType();
-
-                var converterParameter = await _converterHelper.ConvertParameterAsync(args[i], e, partype);
-            }
-        }
-
-        private async Task RunCommandAsync(string cmd, MessageCreateEventArgs e, List<string> args)
-        {
-            MethodInfo command = FindCommand(cmd);
-            if (command == null)
+            Command? cmd = FindCommand(cmdn);
+            if (cmd == null)
             {
                 await e.Message.RespondAsync($"Unknown command, type `{_baseOptions.CommandPrefix} help` for all commands");
                 return;
             }
+            Command command = cmd.GetValueOrDefault();
 
             var checkAttribs = command.GetCustomAttributes().Where(x => x.GetType().IsAssignableTo(typeof(ICheckAttribute)));
 
@@ -101,10 +91,8 @@ namespace WBot2.Helpers
                 }
             }
 
-            object[] cmdargs = BuildCommandArgs(command, args);
-
-            _logger.LogInformation($"Command {command} with args {string.Join(" ", args)} run by {e.Author.Username}");
-            await (Task)command.Invoke(_commandModules.FirstOrDefault(x => x.GetType().FullName == command.DeclaringType.FullName), new object[] { e, args });
+            _logger.LogInformation($"Command {command.Name} with args {string.Join(" ", args)} run by {e.Author.Username}");
+            await command.Call(CommandModules.FirstOrDefault(x => x.GetType().FullName == command.Method.DeclaringType.FullName), new object[] { e, args });
         }
         public async Task ProcessCommands(DiscordClient sender, MessageCreateEventArgs e)
         {
@@ -116,12 +104,8 @@ namespace WBot2.Helpers
                                            : new string[] { element })  // Keep the entire item
                      .SelectMany(element => element).ToList();
             var cmd = args.FirstOrDefault();
-            if (string.IsNullOrEmpty(cmd) || cmd == "help")
-            {
-                //TODO: Move this to a dedicated "help" command, leave this as fallback if one isn't defined. Add command descriptions
-                await e.Message.RespondAsync($"Commands: {string.Join(", ", _commands.Select(x => x.GetCustomAttribute<CommandAttribute>().Name))}");
+            if (string.IsNullOrEmpty(cmd))
                 return;
-            }
             args = args.Skip(1).ToList();
 
             try

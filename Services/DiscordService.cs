@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using DSharpPlus;
+﻿using DSharpPlus;
 using DSharpPlus.EventArgs;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using WBot2.Data;
-using WBot2.Helpers;
+using WBot2.Helpers.Interfaces;
 
 namespace WBot2.Services
 {
@@ -21,13 +18,15 @@ namespace WBot2.Services
         private readonly DiscordOptions _options;
         private readonly IServiceProvider _serviceProvider;
         private readonly ICommandHandler _commandHandler;
+        private readonly IReactionHelper _reactionHelper;
 
         public DiscordService(
             ILogger<DiscordService> logger,
             DiscordClient client,
             IOptions<DiscordOptions> options,
             IServiceProvider serviceProvider,
-            ICommandHandler commandHandler
+            ICommandHandler commandHandler,
+            IReactionHelper reactionHelper
             )
         {
             _logger = logger;
@@ -35,6 +34,7 @@ namespace WBot2.Services
             _options = options.Value;
             _serviceProvider = serviceProvider;
             _commandHandler = commandHandler;
+            _reactionHelper = reactionHelper;
         }
         public async Task StartAsync(CancellationToken cancellationToken)
         {
@@ -54,6 +54,18 @@ namespace WBot2.Services
 ;
             //_client.GuildMemberRemoved += GuildMemberRemovedAsync;
 
+            _client.MessageReactionAdded += async (sender, e) =>
+            {
+                try
+                {
+                    await MessageReaction(sender, e);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Failed to run {nameof(MessageReaction)}");
+                }
+            };
+
             await _client.ConnectAsync();
         }
 
@@ -63,6 +75,12 @@ namespace WBot2.Services
                 return;
             _commandHandler.ProcessCommands(sender, e);
         }
+
+        public async Task MessageReaction(DiscordClient sender, MessageReactionAddEventArgs e)
+        {
+            await _reactionHelper.ReactionAdded(e);
+        }
+
         public async Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Discord service is stopping");

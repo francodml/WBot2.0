@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel.DataAnnotations;
 
-namespace WBot2.Helpers
+namespace WBot2.Extensions
 {
     public static class ServiceCollectionExtensions
     {
