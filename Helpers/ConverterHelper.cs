@@ -19,10 +19,10 @@ namespace WBot2.Helpers
             _converters = StaticHelpers.GetModules<IArgConverter>();
         }
 
-        public async Task<T> ConvertParameterAsync<T>(string argument, CommandContext ctx)
+        public T ConvertParameter<T>(string argument, CommandContext ctx)
         {
             var converter = (IArgConverter<T>)_converters.FirstOrDefault(x => x.GetType().IsAssignableTo(typeof(IArgConverter<T>)));
-            return await converter.ParseArgument(argument, ctx);
+            return converter.ParseArgument(argument, ctx).ConfigureAwait(false).GetAwaiter().GetResult();
         }
     }
 }

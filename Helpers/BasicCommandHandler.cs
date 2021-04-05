@@ -54,11 +54,17 @@ namespace WBot2.Helpers
 
         private object[] BuildArguments(CommandContext ctx, List<string> args)
         {
-            var cmdp = ctx.Command.Parameters.Skip(1);
-            List<object> result = new();
-            result.Add(ctx);
-            throw new NotImplementedException();
-
+            var cmdp = ctx.Command.Parameters.Skip(1).ToArray();
+            List<object> builtArgs = new();
+            builtArgs.Add(ctx);
+            for (int i = 0; i < cmdp.Count(); i++)
+            {
+                var @type = cmdp[i].ParameterType;
+                MethodInfo generic = _converterHelper.GetType().GetMethod("ConvertParameter").MakeGenericMethod(@type);
+                var arg = generic.Invoke(_converterHelper, new object[] { args[i], ctx });
+                builtArgs.Add(arg);
+            }
+            return builtArgs.ToArray();
         }
 
         private Command FindCommand(string cmd)
@@ -110,7 +116,7 @@ namespace WBot2.Helpers
             }
 
             _logger.LogInformation($"Command {command.Name} with args {string.Join(" ", args)} run by {e.Author.Username}");
-            await command.Call(CommandModules.FirstOrDefault(x => x.GetType().FullName == command.Method.DeclaringType.FullName), new object[] { ctx, args });
+            await command.Call(CommandModules.FirstOrDefault(x => x.GetType().FullName == command.Method.DeclaringType.FullName), builtArgs);
         }
         public async Task ProcessCommands(DiscordClient sender, MessageCreateEventArgs e)
         {

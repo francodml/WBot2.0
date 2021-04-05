@@ -24,6 +24,6 @@ namespace WBot2.Helpers
         }
 
         public static List<Type> GetModuleTypes<T>()
-            => Assembly.GetAssembly(typeof(T)).GetTypes().Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(T))).ToList();
+            => Assembly.GetAssembly(typeof(T)).GetTypes().Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(T)) || t.IsAssignableTo(typeof(T)) && !t.IsInterface).ToList();
     }
 }

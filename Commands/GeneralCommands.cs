@@ -45,9 +45,11 @@ namespace WBot2.Commands
 
         [Command("uwu")]
         [NeedsPermissions(DSharpPlus.Permissions.Administrator | DSharpPlus.Permissions.BanMembers)]
-        public async Task Uwu(CommandContext ctx, List<string> args)
+        public async Task Uwu(CommandContext ctx, int waitTime)
         {
-            await Task.Delay(10000);
+            await ctx.RespondAsync($"Ok, I'll wait {waitTime} seconds!");
+            waitTime *= 1000;
+            await Task.Delay(waitTime);
             await ctx.Message.RespondAsync("UwU");
         }
     }
