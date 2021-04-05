@@ -59,8 +59,13 @@ namespace WBot2.Helpers
             builtArgs.Add(ctx);
             for (int i = 0; i < cmdp.Count(); i++)
             {
-                var @type = cmdp[i].ParameterType;
-                MethodInfo generic = _converterHelper.GetType().GetMethod("ConvertParameter").MakeGenericMethod(@type);
+                var type = cmdp[i].ParameterType;
+                if (type == args[i].GetType())
+                {
+                    builtArgs.Add(args[i]);
+                    continue;
+                }
+                MethodInfo generic = _converterHelper.GetType().GetMethod("ConvertParameter").MakeGenericMethod(type);
                 var arg = generic.Invoke(_converterHelper, new object[] { args[i], ctx });
                 builtArgs.Add(arg);
             }

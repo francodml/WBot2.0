@@ -23,7 +23,7 @@ namespace WBot2.Commands
         }
 
         [Command("help"), Description("Shows all commands and their descriptions")]
-        public async Task Help(CommandContext ctx, List<string> args)
+        public async Task Help(CommandContext ctx)
         {
             DiscordEmbedBuilder embed = await _helpFormatter.FormatHelp(RegisteringHandler);
             embed.WithAuthor(_discordClient.CurrentUser.Username, iconUrl:_discordClient.CurrentUser.AvatarUrl)
@@ -33,12 +33,12 @@ namespace WBot2.Commands
 
         [Command("ping"), Description("Pings the bot, and gets a reply!")]
         [Alias("pong", "p")]
-        public async Task Ping(CommandContext ctx, List<string> args)
+        public async Task Ping(CommandContext ctx)
         {
             await ctx.Message.RespondAsync($"{ctx.User.Mention} Pong!");
         }
         [Command("say"), Description("Makes the bot say something")]
-        public async Task Say(CommandContext ctx, List<string> args)
+        public async Task Say(CommandContext ctx, string args)
         {
             await ctx.Message.RespondAsync($"You told me to say: '{string.Join(" ", args)}'");
         }
