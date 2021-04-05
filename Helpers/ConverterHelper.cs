@@ -6,21 +6,23 @@ using System.Threading.Tasks;
 using System.Reflection;
 using WBot2.Converters;
 using DSharpPlus.EventArgs;
+using WBot2.Commands;
+using WBot2.Helpers.Interfaces;
 
 namespace WBot2.Helpers
 {
-    public class ConverterHelper
+    public class ConverterHelper : IConverterHelper
     {
         private readonly List<IArgConverter> _converters;
         public ConverterHelper()
         {
-            _converters = StaticHelpers.GetModules<IArgConverter>(null);
+            _converters = StaticHelpers.GetModules<IArgConverter>();
         }
 
-        public async Task<T> ConvertParameterAsync<T> (string argument, MessageCreateEventArgs e)
+        public async Task<T> ConvertParameterAsync<T>(string argument, CommandContext ctx)
         {
             var converter = (IArgConverter<T>)_converters.FirstOrDefault(x => x.GetType().IsAssignableTo(typeof(IArgConverter<T>)));
-            return await converter.ParseArgument(argument, e);
+            return await converter.ParseArgument(argument, ctx);
         }
     }
 }

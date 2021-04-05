@@ -5,14 +5,15 @@ using DSharpPlus.Entities;
 using System.Text;
 using DSharpPlus.EventArgs;
 using System.Threading.Tasks;
+using WBot2.Commands;
 
 namespace WBot2.Converters
 {
     class MemberConverter : IArgConverter<DiscordMember>
     {
-        public async Task<DiscordMember> ParseArgument(string arg, MessageCreateEventArgs e)
+        async Task<DiscordMember> IArgConverter<DiscordMember>.ParseArgument(string arg, CommandContext ctx)
         {
-            var members = await e.Guild.GetAllMembersAsync();
+            var members = await ctx.Guild.GetAllMembersAsync();
             DiscordMember aMember = members.FirstOrDefault(x => x.Mention == arg);
             return aMember;
         }

@@ -5,6 +5,7 @@ using System.Text;
 using DSharpPlus.EventArgs;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
+using WBot2.Commands;
 
 namespace WBot2.Converters
 {
@@ -14,7 +15,7 @@ namespace WBot2.Converters
     }
     public interface IArgConverter<T> : IArgConverter
     {
-        Task<T> ParseArgument(string argument, MessageCreateEventArgs e);
+        Task<T> ParseArgument(string argument, CommandContext ctx);
     }
 
 }
