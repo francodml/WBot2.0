@@ -32,7 +32,7 @@ namespace WBot2.Helpers
             _logger = logger;
             _baseOptions = _serviceProvider.GetRequiredService<IOptions<DiscordOptions>>().Value;
             _discordClient = discordClient;
-            _converterHelper = converterHelper;
+            //_converterHelper = converterHelper;
 
             CommandModules = StaticHelpers.GetModules<BaseCommandModule>( new object[] { _serviceProvider, this });
             //_commandModules = new();
@@ -78,6 +78,14 @@ namespace WBot2.Helpers
             }
             Command command = cmd.GetValueOrDefault();
 
+            CommandContext ctx = new CommandContext()
+            {
+                Client = this._discordClient,
+                Message = e.Message,
+                RawArguments = args,
+                Command = command
+            };
+
             var checkAttribs = command.GetCustomAttributes().Where(x => x.GetType().IsAssignableTo(typeof(ICheckAttribute)));
 
             foreach (ICheckAttribute attribute in checkAttribs)
@@ -92,7 +100,7 @@ namespace WBot2.Helpers
             }
 
             _logger.LogInformation($"Command {command.Name} with args {string.Join(" ", args)} run by {e.Author.Username}");
-            await command.Call(CommandModules.FirstOrDefault(x => x.GetType().FullName == command.Method.DeclaringType.FullName), new object[] { e, args });
+            await command.Call(CommandModules.FirstOrDefault(x => x.GetType().FullName == command.Method.DeclaringType.FullName), new object[] { ctx, args });
         }
         public async Task ProcessCommands(DiscordClient sender, MessageCreateEventArgs e)
         {

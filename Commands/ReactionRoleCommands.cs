@@ -25,21 +25,21 @@ namespace WBot2.Commands
         public override string ModuleName => "Reaction Roles";
 
         [Command("watchmessage"), Description("Adds the specified message to the list of messages to watch for reaction changes")]
-        public async Task AddWatchedMessage(MessageCreateEventArgs e, List<string> args)
+        public async Task AddWatchedMessage(CommandContext ctx, List<string> args)
         {
             if (string.IsNullOrEmpty(args[0]))
             {
-                await e.Message.RespondAsync("You must provide a message ID");
+                await ctx.Message.RespondAsync("You must provide a message ID");
             }
-            if (_reactionHelper.RRDbContext.Guilds.Where(x => x.ID == e.Guild.Id).Count() == 0)
+            if (_reactionHelper.RRDbContext.Guilds.Where(x => x.ID == ctx.Guild.Id).Count() == 0)
             {
-                _reactionHelper.RRDbContext.Add(new Guild { ID = e.Guild.Id });
+                _reactionHelper.RRDbContext.Add(new Guild { ID = ctx.Guild.Id });
                 _reactionHelper.RRDbContext.SaveChanges();
             }
             var guild = _reactionHelper.RRDbContext.Guilds
-                .FirstOrDefault(x => x.ID == e.Guild.Id);
-            guild.ReactMessages.Add(new RRMessage { ID = ulong.Parse(args[0]), GuildID = e.Guild.Id });
-            await e.Message.RespondAsync($"Added message with ID {args[0]} to the watched messages table.\nConfigure it further with the modify command.");
+                .FirstOrDefault(x => x.ID == ctx.Guild.Id);
+            guild.ReactMessages.Add(new RRMessage { ID = ulong.Parse(args[0]), GuildID = ctx.Guild.Id });
+            await ctx.Message.RespondAsync($"Added message with ID {args[0]} to the watched messages table.\nConfigure it further with the modify command.");
         }
     }
 }

@@ -23,33 +23,32 @@ namespace WBot2.Commands
         }
 
         [Command("help"), Description("Shows all commands and their descriptions")]
-        public async Task Help(MessageCreateEventArgs e, List<string> args)
+        public async Task Help(CommandContext ctx, List<string> args)
         {
             DiscordEmbedBuilder embed = await _helpFormatter.FormatHelp(RegisteringHandler);
-            var member = await e.Guild.GetMemberAsync(e.Author.Id);
             embed.WithAuthor(_discordClient.CurrentUser.Username, iconUrl:_discordClient.CurrentUser.AvatarUrl)
-                .WithColor(member.Color);
-            await e.Message.RespondAsync($"{e.Author.Mention} these are the available commands",embed);
+                .WithColor(ctx.Member.Color);
+            await ctx.Message.RespondAsync($"{ctx.User.Mention} these are the available commands",embed);
         }
 
         [Command("ping"), Description("Pings the bot, and gets a reply!")]
         [Alias("pong", "p")]
-        public async Task Ping(MessageCreateEventArgs e, List<string> args)
+        public async Task Ping(CommandContext ctx, List<string> args)
         {
-            await e.Message.RespondAsync($"{e.Author.Mention} Pong!");
+            await ctx.Message.RespondAsync($"{ctx.User.Mention} Pong!");
         }
         [Command("say"), Description("Makes the bot say something")]
-        public async Task Say(MessageCreateEventArgs e, List<string> args)
+        public async Task Say(CommandContext ctx, List<string> args)
         {
-            await e.Message.RespondAsync($"You told me to say: '{string.Join(" ", args)}'");
+            await ctx.Message.RespondAsync($"You told me to say: '{string.Join(" ", args)}'");
         }
 
         [Command("uwu")]
         [NeedsPermissions(DSharpPlus.Permissions.Administrator | DSharpPlus.Permissions.BanMembers)]
-        public async Task Uwu(MessageCreateEventArgs e, List<string> args)
+        public async Task Uwu(CommandContext ctx, List<string> args)
         {
             await Task.Delay(10000);
-            await e.Message.RespondAsync("UwU");
+            await ctx.Message.RespondAsync("UwU");
         }
     }
 }
