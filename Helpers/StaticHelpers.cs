@@ -9,6 +9,10 @@ namespace WBot2.Helpers
 {
     public static class StaticHelpers
     {
+        public static List<T> GetModules<T>()
+        {
+            return GetModules<T>(null);
+        }
         public static List<T> GetModules<T>(object[] constructorArgs)
         {
             List<T> list = new();
