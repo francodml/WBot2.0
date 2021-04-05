@@ -50,6 +50,7 @@ namespace WBot2.Commands
             await ctx.RespondAsync($"Ok, I'll wait {waitTime} seconds!");
             waitTime *= 1000;
             await Task.Delay(waitTime);
+            await ctx.TriggerTypingAsync();
             await ctx.Message.RespondAsync("UwU");
         }
     }
