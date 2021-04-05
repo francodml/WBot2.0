@@ -11,6 +11,7 @@ using WBot2.Services;
 using WBot2.Extensions;
 using WBot2.Helpers;
 using WBot2.Helpers.Interfaces;
+using WBot2.Converters;
 using DSharpPlus.Entities;
 
 namespace WBot2
@@ -58,6 +59,7 @@ namespace WBot2
             services.AddHostedService<DiscordService>();
             services.AddSingleton<ICommandHandler, BasicCommandHandler>();
             services.AddSingleton<IReactionHelper, ReactionRolesHelper>();
+            services.AddSingleton<IConverterHelper, ConverterHelper>();
             services.AddTransient<IHelpFormatter<DiscordEmbedBuilder>, BasicHelpFormatter>();
 
             services.AddDbContext<ReactionRoleContext>(options =>

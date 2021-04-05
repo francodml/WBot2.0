@@ -22,20 +22,19 @@ namespace WBot2.Helpers
         protected readonly ILogger<BasicCommandHandler> _logger;
         protected readonly DiscordOptions _baseOptions;
         protected readonly DiscordClient _discordClient;
-        protected readonly ConverterHelper _converterHelper;
+        protected readonly IConverterHelper _converterHelper;
 
         public List<BaseCommandModule> CommandModules { get; }
         public List<Command> Commands { get; }
-        public BasicCommandHandler(IServiceProvider serviceProvider, ILogger<BasicCommandHandler> logger, DiscordClient discordClient)
+        public BasicCommandHandler(IServiceProvider serviceProvider, ILogger<BasicCommandHandler> logger, DiscordClient discordClient, IConverterHelper converterHelper)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
             _baseOptions = _serviceProvider.GetRequiredService<IOptions<DiscordOptions>>().Value;
             _discordClient = discordClient;
-            //_converterHelper = converterHelper;
+            _converterHelper = converterHelper;
 
             CommandModules = StaticHelpers.GetModules<BaseCommandModule>( new object[] { _serviceProvider, this });
-            //_commandModules = new();
             Commands = new();
 
             foreach (BaseCommandModule module in CommandModules)
@@ -51,6 +50,15 @@ namespace WBot2.Helpers
                     Commands.Add(cmd);
                 }
             }
+        }
+
+        private object[] BuildArguments(CommandContext ctx, List<string> args)
+        {
+            var cmdp = ctx.Command.Parameters.Skip(1);
+            List<object> result = new();
+            result.Add(ctx);
+            throw new NotImplementedException();
+
         }
 
         private Command FindCommand(string cmd)
@@ -85,6 +93,8 @@ namespace WBot2.Helpers
                 RawArguments = args,
                 Command = command
             };
+
+            object[] builtArgs = BuildArguments(ctx, args);
 
             var checkAttribs = command.GetCustomAttributes().Where(x => x.GetType().IsAssignableTo(typeof(ICheckAttribute)));
 
