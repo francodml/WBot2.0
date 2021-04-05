@@ -10,6 +10,8 @@ namespace WBot2.Commands
     public struct Command
     {
         public MethodInfo Method { init; get; }
+        public ParameterInfo[] Parameters =>
+            Method.GetParameters();
 
         public BaseCommandModule Module { init; get; }
 
