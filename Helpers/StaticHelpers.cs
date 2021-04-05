@@ -22,8 +22,16 @@ namespace WBot2.Helpers
             }
             return list;
         }
-
+        
         public static List<Type> GetModuleTypes<T>()
-            => Assembly.GetAssembly(typeof(T)).GetTypes().Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(T)) || t.IsAssignableTo(typeof(T)) && !t.IsInterface).ToList();
+        {
+            switch (typeof(T).IsInterface)
+            {
+                case true:
+                    return Assembly.GetAssembly(typeof(T)).GetTypes().Where(t => t.IsClass && !t.IsAbstract && t.IsAssignableTo(typeof(T)) && !t.IsInterface).ToList();
+                case false:
+                    return Assembly.GetAssembly(typeof(T)).GetTypes().Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(T))).ToList();
+            }
+        }
     }
 }
