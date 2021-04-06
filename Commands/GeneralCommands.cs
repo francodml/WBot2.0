@@ -38,7 +38,7 @@ namespace WBot2.Commands
             await ctx.Message.RespondAsync($"{ctx.User.Mention} Pong!");
         }
         [Command("say"), Description("Makes the bot say something")]
-        public async Task Say(CommandContext ctx, string args)
+        public async Task Say(CommandContext ctx, params string[] args)
         {
             await ctx.Message.RespondAsync($"You told me to say: '{string.Join(" ", args)}'");
         }

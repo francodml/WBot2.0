@@ -65,11 +65,18 @@ namespace WBot2.Helpers
                 {
                     builtArgs.Add(args[i]);
                     continue;
+                } 
+                else if (cmdp[i].GetCustomAttributes(typeof(ParamArrayAttribute), false).Length > 0)
+                {
+                    var remaining = (List<string>)args.Skip(i);
+                    await ctx.RespondAsync($"PARAMS DEBUG!\nCurrent arg: {i}\nTotal args: {args.Count}\nPost-Skip args: {remaining.Count}");
+                    break;
                 }
                 try
                 {
-                    MethodInfo generic = _converterHelper.GetType().GetMethod("ConvertParameterAsync").MakeGenericMethod(type);
-                    var task = (Task<object>)generic.Invoke(_converterHelper, new object[] { ctx, args[i], i });
+                    /*MethodInfo generic = _converterHelper.GetType().GetMethod("ConvertParameterAsync").MakeGenericMethod(type);
+                    var task = (Task<object>)generic.Invoke(_converterHelper, new object[] { ctx, args[i], i });*/
+                    var task = _converterHelper.ConvertParameterAsync(ctx, type, args[i], i);
                     convertTasks.Add(task);
                 } 
                 catch (Exception e)
