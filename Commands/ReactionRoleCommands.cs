@@ -1,16 +1,11 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using DSharpPlus;
-using DSharpPlus.EventArgs;
 using WBot2.Commands.Attributes;
 using WBot2.Data;
 using WBot2.Helpers.Interfaces;
-using WBot2.Helpers;
 
 namespace WBot2.Commands
 {

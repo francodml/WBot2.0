@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
-using WBot2.Extensions;
 using WBot2.Commands.Attributes;
+using WBot2.Extensions;
 
 namespace WBot2.Commands
 {

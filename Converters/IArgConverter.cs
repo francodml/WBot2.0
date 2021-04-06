@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DSharpPlus.EventArgs;
-using System.Threading.Tasks;
-using DSharpPlus.Entities;
+﻿using System.Threading.Tasks;
 using WBot2.Commands;
 
 namespace WBot2.Converters

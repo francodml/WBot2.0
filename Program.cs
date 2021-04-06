@@ -1,18 +1,16 @@
-﻿using System;
-using DSharpPlus;
+﻿using DSharpPlus;
+using DSharpPlus.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using WBot2.Data;
-using WBot2.Services;
 using WBot2.Extensions;
 using WBot2.Helpers;
 using WBot2.Helpers.Interfaces;
-using WBot2.Converters;
-using DSharpPlus.Entities;
+using WBot2.Services;
 
 namespace WBot2
 {

@@ -10,9 +10,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using WBot2.Commands;
 using WBot2.Commands.Attributes;
-using WBot2.Helpers.Interfaces;
 using WBot2.Data;
-using WBot2.Extensions;
+using WBot2.Helpers.Interfaces;
 
 namespace WBot2.Helpers
 {
@@ -68,14 +67,24 @@ namespace WBot2.Helpers
                 } 
                 else if (cmdp[i].GetCustomAttributes(typeof(ParamArrayAttribute), false).Length > 0)
                 {
-                    var remaining = (List<string>)args.Skip(i);
+                    Type elementT = type.GetElementType();
+                    var remaining = args.Skip(i).ToList();
+                    if (elementT == typeof(string))
+                    {
+                        builtArgs.Add(remaining.ToArray());
+                        break;
+                    }
+                    List<object> converts = new();
+                    foreach (string arg in remaining)
+                    {
+                        var converted = await _converterHelper.ConvertParameterAsync(ctx, elementT, arg, i);
+                        converts.Add(converted);
+                    }
                     await ctx.RespondAsync($"PARAMS DEBUG!\nCurrent arg: {i}\nTotal args: {args.Count}\nPost-Skip args: {remaining.Count}");
                     break;
                 }
                 try
                 {
-                    /*MethodInfo generic = _converterHelper.GetType().GetMethod("ConvertParameterAsync").MakeGenericMethod(type);
-                    var task = (Task<object>)generic.Invoke(_converterHelper, new object[] { ctx, args[i], i });*/
                     var task = _converterHelper.ConvertParameterAsync(ctx, type, args[i], i);
                     convertTasks.Add(task);
                 } 

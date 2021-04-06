@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using DSharpPlus;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
-using WBot2.Helpers.Interfaces;
 using WBot2.Data;
-using DSharpPlus;
+using WBot2.Helpers.Interfaces;
 
 namespace WBot2.Commands
 {

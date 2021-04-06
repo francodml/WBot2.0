@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using DSharpPlus;
-using DSharpPlus.Entities;
+﻿using System.Threading.Tasks;
 
 namespace WBot2.Helpers.Interfaces
 {

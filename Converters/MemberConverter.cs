@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DSharpPlus.Entities;
 using System.Linq;
-using DSharpPlus.Entities;
-using System.Text;
-using DSharpPlus.EventArgs;
 using System.Threading.Tasks;
 using WBot2.Commands;
 

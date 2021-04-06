@@ -1,9 +1,9 @@
 ﻿using DSharpPlus.Entities;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
-using WBot2.Helpers.Interfaces;
+using System.Threading.Tasks;
 using WBot2.Commands;
+using WBot2.Helpers.Interfaces;
 
 namespace WBot2.Helpers
 {

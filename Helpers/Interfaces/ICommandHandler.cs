@@ -1,9 +1,6 @@
 ﻿using DSharpPlus;
 using DSharpPlus.EventArgs;
-using System;
 using System.Collections.Generic;
-using System.Text;
-using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using WBot2.Commands;
 

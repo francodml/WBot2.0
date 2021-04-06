@@ -1,9 +1,7 @@
 ﻿using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using WBot2.Commands.Attributes;
 using WBot2.Helpers.Interfaces;
@@ -52,6 +50,17 @@ namespace WBot2.Commands
             await Task.Delay(waitTime);
             await ctx.TriggerTypingAsync();
             await ctx.Message.RespondAsync("UwU");
+        }
+        
+        [Command("paramstest"), Alias("ptest", "pt")]
+        public async Task PTest(CommandContext ctx, string ass, string cuck, params int[] cock)
+        {
+            int sum = 0;
+            foreach (int num in cock)
+            {
+                sum += num;
+            }
+            await ctx.RespondAsync($"Total sum is {sum}");
         }
     }
 }

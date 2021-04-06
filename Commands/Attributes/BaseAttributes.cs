@@ -1,13 +1,10 @@
-﻿using System;
-using DSharpPlus;
-using DSharpPlus.Entities;
+﻿using DSharpPlus;
 using DSharpPlus.EventArgs;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using System;
 using System.Threading.Tasks;
 using WBot2.Data;
-using Microsoft.Extensions.Options;
 
 namespace WBot2.Commands.Attributes
 {

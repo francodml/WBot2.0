@@ -1,15 +1,13 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
-using WBot2.Converters;
-using DSharpPlus.EventArgs;
-using WBot2.Commands;
-using WBot2.Helpers.Interfaces;
-using Microsoft.Extensions.Logging;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
+using WBot2.Commands;
+using WBot2.Converters;
+using WBot2.Helpers.Interfaces;
 
 namespace WBot2.Helpers
 {

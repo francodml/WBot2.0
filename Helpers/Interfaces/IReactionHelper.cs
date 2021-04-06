@@ -1,6 +1,6 @@
 ﻿using DSharpPlus.EventArgs;
-using WBot2.Data;
 using System.Threading.Tasks;
+using WBot2.Data;
 
 namespace WBot2.Helpers.Interfaces
 {
