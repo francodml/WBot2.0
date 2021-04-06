@@ -5,6 +5,6 @@ namespace WBot2.Helpers.Interfaces
 {
     public interface IConverterHelper
     {
-        T ConvertParameter<T>(string argument, CommandContext ctx);
+        Task<object> ConvertParameterAsync<T>(CommandContext ctx, string argument, int argindex);
     }
 }

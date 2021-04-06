@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WBot2.Commands;
+using WBot2.Helpers;
 
 namespace WBot2.Converters
 {
@@ -14,7 +15,7 @@ namespace WBot2.Converters
         {
             if (int.TryParse(argument, out int result))
                 return Task.FromResult(result);
-            throw new Exception("i somehow can't parse this xoxo");
+            throw new ArgConverterException(this, $"Cannot parse '{argument}' as an integer");
         }
     }
 }

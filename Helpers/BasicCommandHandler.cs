@@ -52,10 +52,11 @@ namespace WBot2.Helpers
             }
         }
 
-        private object[] BuildArguments(CommandContext ctx, List<string> args)
+        private async Task<object[]> BuildArguments(CommandContext ctx, List<string> args)
         {
             var cmdp = ctx.Command.Parameters.Skip(1).ToArray();
             List<object> builtArgs = new();
+            List<Task<object>> convertTasks = new();
             builtArgs.Add(ctx);
             for (int i = 0; i < cmdp.Count(); i++)
             {
@@ -65,10 +66,25 @@ namespace WBot2.Helpers
                     builtArgs.Add(args[i]);
                     continue;
                 }
-                MethodInfo generic = _converterHelper.GetType().GetMethod("ConvertParameter").MakeGenericMethod(type);
-                var arg = generic.Invoke(_converterHelper, new object[] { args[i], ctx });
-                builtArgs.Add(arg);
+                try
+                {
+                    MethodInfo generic = _converterHelper.GetType().GetMethod("ConvertParameterAsync").MakeGenericMethod(type);
+                    var task = (Task<object>)generic.Invoke(_converterHelper, new object[] { ctx, args[i], i });
+                    convertTasks.Add(task);
+                } 
+                catch (Exception e)
+                {
+                    switch (e)
+                    {
+                        case NullReferenceException nullReference:
+                            break;
+                        default:
+                            throw;
+                    }
+                }
             }
+            object[] result = await Task.WhenAll(convertTasks);
+            result.ToList().ForEach(x => builtArgs.Add(x));
             return builtArgs.ToArray();
         }
 
@@ -105,7 +121,15 @@ namespace WBot2.Helpers
                 Command = command
             };
 
-            object[] builtArgs = BuildArguments(ctx, args);
+            object[] builtArgs;
+            try
+            {
+                builtArgs = await BuildArguments(ctx, args);
+            }
+            catch
+            {
+                throw;
+            }
 
             var checkAttribs = command.GetCustomAttributes().Where(x => x.GetType().IsAssignableTo(typeof(ICheckAttribute)));
 

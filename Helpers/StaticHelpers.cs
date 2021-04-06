@@ -13,6 +13,14 @@ namespace WBot2.Helpers
         {
             return GetModules<T>(null);
         }
+
+        public static Dictionary<Type, T> GetModulesWithType<T>()
+        {
+            var a = GetModules<T>();
+            Dictionary<Type, T> dict = new();
+            dict = a.ToDictionary(x => x.GetType().GetInterfaces().FirstOrDefault(i => i.IsGenericType).GetGenericArguments().FirstOrDefault(), x => x);
+            return dict;
+        }
         public static List<T> GetModules<T>(object[] constructorArgs)
         {
             List<T> list = new();
