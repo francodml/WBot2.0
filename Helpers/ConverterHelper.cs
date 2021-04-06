@@ -27,7 +27,6 @@ namespace WBot2.Helpers
         {
             try
             {
-#nullable enable
                 IArgConverter<T> converter = (IArgConverter<T>)_converters.FirstOrDefault(x => x.Key == typeof(T)).Value;
                 if (converter == null)
                 {
@@ -46,8 +45,13 @@ namespace WBot2.Helpers
                 throw;
             }
         }
+
+        public Task<object> ConvertParameterAsync(CommandContext ctx, Type target, string argument, int argindex)
+        {
+            MethodInfo generic = GetType().GetMethods().FirstOrDefault(x=> x.Name == "ConvertParameterAsync" && x.IsGenericMethod).MakeGenericMethod(target);
+            return (Task<object>)generic.Invoke(this, new object[] { ctx, argument, argindex });
+        }
     }
-#nullable disable
 
     [Serializable]
     public class ArgConverterException : Exception
