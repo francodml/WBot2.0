@@ -60,14 +60,20 @@ namespace WBot2.Helpers
             for (int i = 0; i < cmdp.Count(); i++)
             {
                 var type = cmdp[i].ParameterType;
+                if (cmdp[i].IsOptional && args.Count() <= i)
+                {
+                    convertTasks.Add(Task.FromResult(cmdp[i].DefaultValue));
+                    continue;
+                }
                 if (type == args[i].GetType())
                 {
-                    builtArgs.Add(args[i]);
+                    //builtArgs.Add(args[i]);
+                    convertTasks.Add(Task.FromResult<object>(args[i]));
                     continue;
                 } 
                 else if (cmdp[i].GetCustomAttributes(typeof(ParamArrayAttribute), false).Length > 0)
                 {
-                    Type elementT = type.GetElementType();
+                    /*Type elementT = type.GetElementType();
                     var remaining = args.Skip(i).ToList();
                     if (elementT == typeof(string))
                     {
@@ -81,7 +87,8 @@ namespace WBot2.Helpers
                         converts.Add(converted);
                     }
                     await ctx.RespondAsync($"PARAMS DEBUG!\nCurrent arg: {i}\nTotal args: {args.Count}\nPost-Skip args: {remaining.Count}");
-                    break;
+                    break;*/
+                    throw new NotImplementedException("Params arrays are not yet implemented");
                 }
                 try
                 {
@@ -104,19 +111,18 @@ namespace WBot2.Helpers
             return builtArgs.ToArray();
         }
 
-        private Command FindCommand(string cmd)
+#nullable enable
+        private Command? FindCommand(string cmd)
         {
-            //TODO: implement command overloading (optional args)
-            return Commands.FirstOrDefault(x =>
+            Command? ret = Commands.FirstOrDefault(x =>
             {
-                AliasAttribute attr = x.GetCustomAttribute<AliasAttribute>();
-                bool aliastest = false;
-                if (attr != null)
-                {
-                    aliastest = attr.Aliases.Any(x => x == cmd);
-                }
-                return x.GetCustomAttribute<CommandAttribute>().Name == cmd || aliastest;
+                bool fuck = x.Aliases == null;
+                if (x.Aliases != null)
+                    return x.Aliases?.Any(x => x == cmd)??false;
+                return x.Name == cmd;
             });
+
+            return ret ?? null;
         }
 
         private async Task RunCommandAsync(string cmdn, MessageCreateEventArgs e, List<string> args)
@@ -127,7 +133,7 @@ namespace WBot2.Helpers
                 await e.Message.RespondAsync($"Unknown command, type `{_baseOptions.CommandPrefix} help` for all commands");
                 return;
             }
-            Command command = cmd.GetValueOrDefault();
+            Command command = cmd;
 
             CommandContext ctx = new CommandContext()
             {
@@ -136,7 +142,7 @@ namespace WBot2.Helpers
                 RawArguments = args,
                 Command = command
             };
-
+#nullable disable
             object[] builtArgs;
             try
             {

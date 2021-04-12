@@ -36,20 +36,20 @@ namespace WBot2.Commands
             await ctx.Message.RespondAsync($"{ctx.User.Mention} Pong!");
         }
         [Command("say"), Description("Makes the bot say something")]
-        public async Task Say(CommandContext ctx, params string[] args)
+        public async Task Say(CommandContext ctx, string args)
         {
-            await ctx.Message.RespondAsync($"You told me to say: '{string.Join(" ", args)}'");
+            await ctx.Message.RespondAsync($"You told me to say: '{args}'");
         }
 
         [Command("uwu")]
         [NeedsPermissions(DSharpPlus.Permissions.Administrator | DSharpPlus.Permissions.BanMembers)]
-        public async Task Uwu(CommandContext ctx, int waitTime)
+        public async Task Uwu(CommandContext ctx, int waitTime = 10, string msg = "UwU")
         {
-            await ctx.RespondAsync($"Ok, I'll wait {waitTime} seconds!");
+            await ctx.RespondAsync($"Ok, I'll wait {waitTime} seconds and say that!");
             waitTime *= 1000;
             await Task.Delay(waitTime);
             await ctx.TriggerTypingAsync();
-            await ctx.Message.RespondAsync("UwU");
+            await ctx.Message.RespondAsync($"{msg}");
         }
         
         [Command("paramstest"), Alias("ptest", "pt")]

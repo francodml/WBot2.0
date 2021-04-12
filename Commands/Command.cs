@@ -7,7 +7,7 @@ using WBot2.Extensions;
 
 namespace WBot2.Commands
 {
-    public struct Command
+    public class Command
     {
         public MethodInfo Method { init; get; }
         public ParameterInfo[] Parameters =>
@@ -17,15 +17,10 @@ namespace WBot2.Commands
 
         public string Name => Method.GetCustomAttribute<CommandAttribute>().Name;
 
-        public string Description
-        {
-            get
-            {
-                if (!Method.HasCustomAttribute<DescriptionAttribute>())
-                    return "No description";
-                return Method.GetCustomAttribute<DescriptionAttribute>().Description;
-            }
-        }
+#nullable enable
+        public string[]? Aliases => Method.GetCustomAttribute<AliasAttribute>()?.Aliases;
+        public string? Description => Method.GetCustomAttribute<DescriptionAttribute>()?.Description;
+#nullable disable
 
         public Task Call(BaseCommandModule moduleInstance, object[] args) => (Task)Method.Invoke(moduleInstance, args);
 

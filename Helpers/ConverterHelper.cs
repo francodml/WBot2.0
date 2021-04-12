@@ -21,6 +21,7 @@ namespace WBot2.Helpers
             _logger = logger;
         }
 
+#nullable enable
         public async Task<object> ConvertParameterAsync<T>(CommandContext ctx, string argument, int argindex)
         {
             try
@@ -31,10 +32,10 @@ namespace WBot2.Helpers
                     throw new NotImplementedException($"No converter registered for type {typeof(T)}");
                 }
                 T? result = await converter.ParseArgument(argument, ctx);
-                /*if (result == null)
+                if (result == null)
                 {
-                    throw new NotSupportedException("fuck");
-                }*/
+                    throw new InvalidOperationException($"Argument converter returned null @ {argindex}");
+                }
                 return result;
             }
             catch (ArgConverterException e)
@@ -43,11 +44,23 @@ namespace WBot2.Helpers
                 throw;
             }
         }
+#nullable disable
 
         public Task<object> ConvertParameterAsync(CommandContext ctx, Type target, string argument, int argindex)
         {
             MethodInfo generic = GetType().GetMethods().FirstOrDefault(x=> x.Name == "ConvertParameterAsync" && x.IsGenericMethod).MakeGenericMethod(target);
             return (Task<object>)generic.Invoke(this, new object[] { ctx, argument, argindex });
+        }
+
+        public Task<T> ConvertRemainingParamsAsync<T>(CommandContext ctx, string[] arguments)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<object[]> ConvertRemainingParamsAsync(CommandContext ctx, Type target, string[] arguments)
+        {
+            //MethodInfo generic = GetType().GetMethods().FirstOrDefault(x => x.Name == "ConvertRemainingParamsAsync" && x.IsGenericMethod).MakeGenericMethod(target);
+            throw new NotImplementedException();
         }
     }
 
