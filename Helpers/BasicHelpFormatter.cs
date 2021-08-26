@@ -15,7 +15,7 @@ namespace WBot2.Helpers
                 .WithTitle("Commands")
                 .WithDescription("This is a list of available commands, sorted into their modules.");
 
-            foreach (BaseCommandModule baseModule in commandHandler.CommandModules)
+            foreach (CommandModule baseModule in commandHandler.CommandModules)
             {
                 var cmds = commandHandler.Commands.Where(x => x.Module == baseModule);
                 List<string> cmdDescs = cmds.Select(x => $"{x.Name}: {x.Description}\n").ToList();

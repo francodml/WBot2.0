@@ -7,14 +7,14 @@ using WBot2.Helpers.Interfaces;
 
 namespace WBot2.Commands
 {
-    public class BaseCommandModule
+    public class CommandModule
     {
         public virtual string ModuleName { get => this.GetType().Name; }
         protected readonly IServiceProvider _serviceProvider;
         protected readonly DiscordOptions _baseOptions;
         protected readonly DiscordClient _discordClient;
         protected ICommandHandler RegisteringHandler { get; }
-        public BaseCommandModule(IServiceProvider serviceProvider, ICommandHandler commandHandler)
+        public CommandModule(IServiceProvider serviceProvider, ICommandHandler commandHandler)
         {
             _serviceProvider = serviceProvider;
             this.RegisteringHandler = commandHandler;

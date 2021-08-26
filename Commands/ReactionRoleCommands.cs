@@ -9,7 +9,7 @@ using WBot2.Helpers.Interfaces;
 
 namespace WBot2.Commands
 {
-    class ReactionRoleCommands : BaseCommandModule
+    class ReactionRoleCommands : CommandModule
     {
         private readonly IReactionHelper _reactionHelper;
         public ReactionRoleCommands(IServiceProvider serviceProvider, ICommandHandler commandHandler) : base(serviceProvider, commandHandler)

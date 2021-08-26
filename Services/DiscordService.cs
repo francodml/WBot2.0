@@ -69,11 +69,12 @@ namespace WBot2.Services
             await _client.ConnectAsync();
         }
 
-        public async Task MessageCreated(DiscordClient sender, MessageCreateEventArgs e)
+        public Task MessageCreated(DiscordClient sender, MessageCreateEventArgs e)
         {
             if (e.Author.IsBot)
-                return;
-            _commandHandler.ProcessCommands(sender, e);
+                return Task.CompletedTask;
+            _commandHandler.ProcessCommand(sender, e);
+            return Task.CompletedTask;
         }
 
         public async Task MessageReaction(DiscordClient sender, MessageReactionAddEventArgs e)

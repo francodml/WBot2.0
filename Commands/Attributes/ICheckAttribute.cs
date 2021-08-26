@@ -7,6 +7,6 @@ namespace WBot2.Commands.Attributes
     public interface ICheckAttribute
     {
         public string FailString { get; }
-        public Task<bool> CheckAttribute(MessageCreateEventArgs e, IServiceProvider serviceProvider);
+        public Task<bool> CheckAttribute(CommandContext ctx, IServiceProvider serviceProvider);
     }
 }

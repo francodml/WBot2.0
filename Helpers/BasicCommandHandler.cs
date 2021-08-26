@@ -23,7 +23,7 @@ namespace WBot2.Helpers
         protected readonly DiscordClient _discordClient;
         protected readonly IConverterHelper _converterHelper;
 
-        public List<BaseCommandModule> CommandModules { get; }
+        public List<CommandModule> CommandModules { get; }
         public List<Command> Commands { get; }
         public BasicCommandHandler(IServiceProvider serviceProvider, ILogger<BasicCommandHandler> logger, DiscordClient discordClient, IConverterHelper converterHelper)
         {
@@ -33,10 +33,10 @@ namespace WBot2.Helpers
             _discordClient = discordClient;
             _converterHelper = converterHelper;
 
-            CommandModules = StaticHelpers.GetModules<BaseCommandModule>( new object[] { _serviceProvider, this });
+            CommandModules = StaticHelpers.GetModules<CommandModule>( new object[] { _serviceProvider, this });
             Commands = new();
 
-            foreach (BaseCommandModule module in CommandModules)
+            foreach (CommandModule module in CommandModules)
             {
                 var infos = module.GetType().GetMethods().Where(x => x.GetCustomAttribute<CommandAttribute>() != null);
                 foreach (MethodInfo info in infos)
@@ -157,7 +157,7 @@ namespace WBot2.Helpers
 
             foreach (ICheckAttribute attribute in checkAttribs)
             {
-                if (await attribute.CheckAttribute(e, _serviceProvider) != false)
+                if (await attribute.CheckAttribute(ctx, _serviceProvider) != false)
                     continue;
                 else
                 {
@@ -166,10 +166,18 @@ namespace WBot2.Helpers
                 }
             }
 
+            string suppliedargs = "";
+            foreach (object obj in builtArgs.Skip(1))
+            {
+                suppliedargs += $"{obj.GetType()}({obj})\n";
+            }
+
             _logger.LogInformation($"Command {command.Name} with args {string.Join(" ", args)} run by {e.Author.Username}");
+            _logger.LogInformation($"Supplied built parameters were\n{suppliedargs}");
             await command.Call(CommandModules.FirstOrDefault(x => x.GetType().FullName == command.Method.DeclaringType.FullName), builtArgs);
         }
-        public async Task ProcessCommands(DiscordClient sender, MessageCreateEventArgs e)
+
+        public async Task ProcessCommand(DiscordClient sender, MessageCreateEventArgs e)
         {
             if (!e.Message.Content.ToLower().StartsWith(_baseOptions.CommandPrefix)) { return; }
             var argString = e.Message.Content.Trim().Substring(_baseOptions.CommandPrefix.Length).Trim();

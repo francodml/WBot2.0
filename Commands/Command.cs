@@ -13,7 +13,7 @@ namespace WBot2.Commands
         public ParameterInfo[] Parameters =>
             Method.GetParameters();
 
-        public BaseCommandModule Module { init; get; }
+        public CommandModule Module { init; get; }
 
         public string Name => Method.GetCustomAttribute<CommandAttribute>().Name;
 
@@ -22,7 +22,7 @@ namespace WBot2.Commands
         public string? Description => Method.GetCustomAttribute<DescriptionAttribute>()?.Description;
 #nullable disable
 
-        public Task Call(BaseCommandModule moduleInstance, object[] args) => (Task)Method.Invoke(moduleInstance, args);
+        public Task Call(CommandModule moduleInstance, object[] args) => (Task)Method.Invoke(moduleInstance, args);
 
         public T GetCustomAttribute<T>() where T : Attribute => Method.GetCustomAttribute<T>();
 

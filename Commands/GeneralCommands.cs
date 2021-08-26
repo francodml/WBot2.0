@@ -8,7 +8,7 @@ using WBot2.Helpers.Interfaces;
 
 namespace WBot2.Commands
 {
-    public class GeneralCommands : BaseCommandModule
+    public class GeneralCommands : CommandModule
     {
         public override string ModuleName => "General Commands";
         protected readonly ILogger _logger;
@@ -20,13 +20,14 @@ namespace WBot2.Commands
             _helpFormatter = serviceProvider.GetRequiredService<IHelpFormatter<DiscordEmbedBuilder>>();
         }
 
+
         [Command("help"), Description("Shows all commands and their descriptions")]
         public async Task Help(CommandContext ctx)
         {
             DiscordEmbedBuilder embed = await _helpFormatter.FormatHelp(RegisteringHandler);
-            embed.WithAuthor(_discordClient.CurrentUser.Username, iconUrl:_discordClient.CurrentUser.AvatarUrl)
+            embed.WithAuthor(_discordClient.CurrentUser.Username, iconUrl: _discordClient.CurrentUser.AvatarUrl)
                 .WithColor(ctx.Member.Color);
-            await ctx.Message.RespondAsync($"{ctx.User.Mention} these are the available commands",embed);
+            await ctx.Message.RespondAsync($"{ctx.User.Mention} these are the available commands", embed);
         }
 
         [Command("ping"), Description("Pings the bot, and gets a reply!")]
@@ -51,7 +52,7 @@ namespace WBot2.Commands
             await ctx.TriggerTypingAsync();
             await ctx.Message.RespondAsync($"{msg}");
         }
-        
+
         [Command("paramstest"), Alias("ptest", "pt")]
         public async Task PTest(CommandContext ctx, string ass, string cuck, params int[] cock)
         {
@@ -61,6 +62,12 @@ namespace WBot2.Commands
                 sum += num;
             }
             await ctx.RespondAsync($"Total sum is {sum}");
+        }
+
+        [Command("sudo"), OwnerOnly]
+        public async Task Sudo(CommandContext ctx, DiscordMember member, [Remainder] string command)
+        {
+            throw new NotImplementedException(); //how to avoid implementing stuff
         }
     }
 }

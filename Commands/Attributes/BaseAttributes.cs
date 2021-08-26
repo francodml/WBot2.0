@@ -41,10 +41,10 @@ namespace WBot2.Commands.Attributes
         public string FailString => $"You lack the required permissions to run this command ({Permission.ToPermissionString()})";
         public NeedsPermissionsAttribute(Permissions perms) => this.Permission = perms;
 
-        public async Task<bool> CheckAttribute(MessageCreateEventArgs e, IServiceProvider serviceProvider)
+        public async Task<bool> CheckAttribute(CommandContext ctx, IServiceProvider serviceProvider)
         {
-            var aMember = await e.Guild.GetMemberAsync(e.Author.Id);
-            Permissions mPerms = e.Channel.PermissionsFor(aMember);
+            var aMember = await ctx.Guild.GetMemberAsync(ctx.Message.Author.Id);
+            Permissions mPerms = ctx.Channel.PermissionsFor(aMember);
             return mPerms.HasPermission(Permission);
         }
     }
@@ -53,10 +53,16 @@ namespace WBot2.Commands.Attributes
     public class OwnerOnlyAttribute : Attribute, ICheckAttribute
     {
         public string FailString => "This command can only be run by the bot owner.";
-        public Task<bool> CheckAttribute(MessageCreateEventArgs e, IServiceProvider serviceProvider)
+        public Task<bool> CheckAttribute(CommandContext ctx, IServiceProvider serviceProvider)
         {
             var discordOptions = serviceProvider.GetRequiredService<IOptions<DiscordOptions>>().Value;
-            return Task.FromResult(e.Author.Id == discordOptions.Owner);
+            return Task.FromResult(ctx.Message.Author.Id == discordOptions.Owner);
         }
+    }
+
+    [AttributeUsage(AttributeTargets.Parameter)]
+    public class RemainderAttribute : Attribute
+    {
+
     }
 }
